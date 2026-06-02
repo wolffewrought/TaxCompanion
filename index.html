@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a7f6e" />
+  <meta name="description" content="Tax Companion - UK Self Assessment tracker." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Tax Companion" />
+  <title>Tax Companion</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+:root{--bg:#f5f2ed;--bg2:#ffffff;--surface2:#f0ede8;--border:#e2ddd6;--teal:#1a7f6e;--teal-light:#e8f5f2;--teal-mid:#2a9d8a;--amber:#f59e0b;--amber-light:#fef3c7;--red:#ef4444;--red-light:#fee2e2;--purple:#7c3aed;--purple-light:#ede9fe;--blue:#2563eb;--blue-light:#dbeafe;--orange:#ea580c;--orange-light:#ffedd5;--text:#1c1917;--text2:#57534e;--text3:#a8a29e;--shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);--shadow:0 4px 16px rgba(0,0,0,.08);--shadow-lg:0 20px 40px rgba(0,0,0,.12);--radius-sm:10px;--radius:16px;--radius-lg:24px;--nav-h:72px;--header-h:60px;--font:'Nunito',system-ui,sans-serif;--serif:'Lora',Georgia,serif;--ease:cubic-bezier(.34,1.56,.64,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:#e2f0e4;--text2:#8db898;--text3:#4a7050}
+#app{display:flex;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto;position:relative}
+.app-header{position:sticky;top:0;z-index:80;height:var(--header-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;box-shadow:var(--shadow-sm);gap:8px}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo-pill{width:36px;height:36px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,127,110,.35);flex-shrink:0}
+.logo-pound{font-family:var(--serif);font-size:1.1rem;color:#fff;font-weight:500}
+.header-titles{display:flex;flex-direction:column}
+.header-app-name{font-size:.95rem;font-weight:800;color:var(--text);line-height:1.1;letter-spacing:-.02em}
+.header-year{font-size:.68rem;color:var(--teal);font-weight:600}
+.header-right{display:flex;align-items:center;gap:5px;margin-left:auto}
+.header-icon-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s ease;flex-shrink:0;font-size:.85rem}
+.header-icon-btn:active{transform:scale(.94)}
+.profit-bar-wrap{height:4px;background:var(--surface2);overflow:hidden}
+.profit-bar-fill{height:100%;background:var(--teal);transition:width .6s ease}
+.profit-bar-fill.loss{background:var(--red)}
+.search-bar-wrap{padding:10px 16px 2px;display:none}
+.search-bar-wrap.visible{display:block}
+.search-wrap{position:relative}
+.search-input{width:100%;padding:10px 14px 10px 38px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg2);font-family:var(--font);font-size:.9rem;color:var(--text);transition:border-color .12s}
+.search-input:focus{outline:none;border-color:var(--teal)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.bottom-sheet-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(28,25,23,.4);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.bottom-sheet-overlay.open{display:flex;animation:fadeIn .15s ease}
+.bottom-sheet{background:var(--bg2);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 0 calc(env(safe-area-inset-bottom) + 24px);width:100%;max-width:480px;animation:slideUp .25s var(--ease);max-height:85vh;overflow-y:auto}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.sheet-title{font-size:1rem;font-weight:700;padding:0 24px 12px;color:var(--text)}
+.year-list{padding:0 16px}
+.year-option{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;border:none;background:none;font-family:var(--font);font-size:1rem;font-weight:600;color:var(--text);cursor:pointer;border-radius:var(--radius-sm);transition:background .1s}
+.year-option:hover{background:var(--surface2)}.year-option.current{color:var(--teal)}
+.main-content{flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px)}
+.view{display:none;padding:16px 16px 0;animation:viewIn .2s ease}.view.active{display:block}
+.onboarding-overlay{position:fixed;inset:0;z-index:500;background:var(--teal);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;max-width:480px;margin:0 auto;overflow-y:auto}
+.onboarding-overlay.hidden{display:none}
+.ob-logo{width:68px;height:68px;background:rgba(255,255,255,.2);border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.9rem;color:#fff;margin-bottom:18px;border:2px solid rgba(255,255,255,.3)}
+.ob-step{display:flex;align-items:flex-start;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.15)}
+.ob-step:last-child{border-bottom:none}
+.ob-num{width:27px;height:27px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#fff;flex-shrink:0}
+.ob-text h4{color:#fff;font-size:.88rem;font-weight:700;margin-bottom:1px}
+.ob-text p{color:rgba(255,255,255,.8);font-size:.76rem;line-height:1.4}
+.ob-title{font-family:var(--serif);font-size:1.65rem;color:#fff;font-style:italic;text-align:center;margin-bottom:5px}
+.ob-sub{color:rgba(255,255,255,.8);font-size:.86rem;text-align:center;margin-bottom:18px}
+.ob-btn{width:100%;padding:14px;background:#fff;color:var(--teal);border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.98rem;font-weight:800;cursor:pointer;margin-top:18px}
+.view-hero{padding:8px 4px 13px}
+.hero-greeting{font-size:.88rem;color:var(--text2);margin-bottom:2px}
+.hero-tax-year{font-family:var(--serif);font-size:1.4rem;font-style:italic;color:var(--text);font-weight:500}
+.kpi-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none;margin-bottom:13px}
+.kpi-scroll::-webkit-scrollbar{display:none}
+.kpi-card{flex:0 0 128px;background:var(--bg2);border-radius:var(--radius);padding:13px;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:transform .15s var(--ease)}
+.kpi-card:active{transform:scale(.97)}
+.kpi-icon{font-size:.95rem;margin-bottom:5px;display:block}
+.kpi-label{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:3px}
+.kpi-value{font-size:1.25rem;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:3px}
+.kpi-sub{font-size:.63rem;color:var(--text3);font-weight:500}
+.kpi-income{border-top:3px solid var(--teal)}.kpi-income .kpi-value{color:var(--teal)}
+.kpi-expense{border-top:3px solid var(--red)}.kpi-expense .kpi-value{color:var(--red)}
+.kpi-profit{border-top:3px solid var(--amber)}.kpi-profit .kpi-value{color:var(--amber)}
+.kpi-tax{border-top:3px solid var(--purple)}.kpi-tax .kpi-value{color:var(--purple)}
+.kpi-poa{border-top:3px solid var(--blue)}.kpi-poa .kpi-value{color:var(--blue)}
+.kpi-vat{border-top:3px solid var(--orange)}.kpi-vat .kpi-value{color:var(--orange)}
+.quick-add-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:13px}
+.quick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border:2px dashed var(--border);border-radius:var(--radius);background:var(--bg2);cursor:pointer;font-family:var(--font);font-size:.7rem;font-weight:700;color:var(--text2);transition:all .15s var(--ease);-webkit-tap-highlight-color:transparent}
+.quick-btn:active{transform:scale(.95)}
+.quick-income{border-color:rgba(26,127,110,.3);color:var(--teal)}.quick-income:active,.quick-income:hover{background:var(--teal-light);border-color:var(--teal)}
+.quick-expense{border-color:rgba(239,68,68,.3);color:var(--red)}.quick-expense:active,.quick-expense:hover{background:var(--red-light);border-color:var(--red)}
+.quick-mileage{border-color:rgba(245,158,11,.3);color:var(--amber)}.quick-mileage:active,.quick-mileage:hover{background:var(--amber-light);border-color:var(--amber)}
+.quick-icon{font-size:1.05rem}
+.vat-meter-card{background:var(--bg2);border-radius:var(--radius);padding:15px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.vat-meter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.vat-meter-title{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.vat-meter-amount{font-size:.88rem;font-weight:800;color:var(--orange)}
+.vat-bar-wrap{height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.vat-bar-fill{height:100%;border-radius:5px;transition:width .5s ease}
+.vat-bar-fill.safe{background:var(--teal)}.vat-bar-fill.warn{background:var(--amber)}.vat-bar-fill.danger{background:var(--red)}
+.vat-bar-labels{display:flex;justify-content:space-between;font-size:.63rem;color:var(--text3)}
+.section-card{background:var(--bg2);border-radius:var(--radius);padding:15px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.section-title{font-size:.78rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.04em}
+.section-link{font-size:.76rem;font-weight:700;color:var(--teal);background:none;border:none;cursor:pointer}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.comp-cell{background:var(--surface2);border-radius:var(--radius-sm);padding:10px 11px}
+.comp-label{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:3px}
+.comp-val{font-size:.98rem;font-weight:800;color:var(--text)}
+.comp-val.up{color:var(--teal)}.comp-val.down{color:var(--red)}
+.comp-diff{font-size:.68rem;color:var(--text3);margin-top:2px}
+.recent-list{display:flex;flex-direction:column}
+.recent-item{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--border)}
+.recent-item:last-child{border-bottom:none}
+.recent-dot{width:29px;height:29px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+.recent-dot.inc{background:var(--teal-light);color:var(--teal)}.recent-dot.exp{background:var(--red-light);color:var(--red)}
+.recent-info{flex:1;min-width:0}
+.recent-desc{font-size:.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-meta{font-size:.68rem;color:var(--text3);margin-top:1px}
+.recent-amt{font-size:.86rem;font-weight:800;letter-spacing:-.02em}
+.recent-amt.inc{color:var(--teal)}.recent-amt.exp{color:var(--red)}
+.deadline-list{display:flex;flex-direction:column;gap:7px}
+.deadline-item{display:flex;gap:10px;padding:9px 11px;background:var(--surface2);border-radius:var(--radius-sm);border-left:3px solid var(--border)}
+.deadline-item.urgent{border-left-color:var(--red);background:var(--red-light)}
+.deadline-item.past{opacity:.5}.deadline-item.soon{border-left-color:var(--amber);background:var(--amber-light)}
+.dl-date{font-size:.68rem;font-weight:700;color:var(--text2);min-width:60px;padding-top:1px}
+.dl-text{font-size:.76rem;color:var(--text);line-height:1.4}
+.deadline-item.urgent .dl-date{color:var(--red)}.deadline-item.soon .dl-date{color:var(--amber)}
+.budget-list{display:flex;flex-direction:column;gap:7px}
+.budget-item{background:var(--surface2);border-radius:var(--radius-sm);padding:9px 11px}
+.budget-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.budget-cat{font-size:.78rem;font-weight:600;color:var(--text)}
+.budget-amounts{font-size:.7rem;color:var(--text3)}
+.budget-amounts strong{color:var(--text)}
+.budget-bar-wrap{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.budget-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.budget-bar-fill.ok{background:var(--teal)}.budget-bar-fill.warn{background:var(--amber)}.budget-bar-fill.over{background:var(--red)}
+.empty-card{text-align:center;padding:36px 20px;color:var(--text3);font-size:.86rem;line-height:1.6}
+.empty-icon{font-size:2.1rem;margin-bottom:10px;display:block}
+.empty-cta{margin-top:13px;padding:10px 22px;background:var(--teal);color:#fff;border:none;border-radius:100px;font-family:var(--font);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s var(--ease)}
+.empty-cta:active{transform:scale(.96)}
+.view-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 13px}
+.view-title{font-family:var(--serif);font-size:1.32rem;font-style:italic;color:var(--text);font-weight:500}
+.fab-inline{padding:8px 15px;background:var(--teal);color:#fff;border:none;border-radius:100px;font-family:var(--font);font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s var(--ease);box-shadow:0 2px 8px rgba(26,127,110,.3)}
+.fab-inline:active{transform:scale(.96)}
+.filter-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;scrollbar-width:none}
+.filter-chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--bg2);font-family:var(--font);font-size:.74rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .12s ease;white-space:nowrap}
+.chip.active{background:var(--teal);border-color:var(--teal);color:#fff}
+.entry-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.entry-card{background:var(--bg2);border-radius:var(--radius);padding:12px 13px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-sm);border:1px solid var(--border);animation:itemIn .2s ease;position:relative}
+.entry-card:active{transform:scale(.99)}
+.entry-card.flagged{border-left:3px solid var(--amber)}
+.entry-icon{width:37px;height:37px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.entry-icon.income{background:var(--teal-light);color:var(--teal)}
+.entry-icon.expense{background:var(--red-light);color:var(--red)}
+.entry-icon.mileage{background:var(--amber-light);color:var(--amber)}
+.entry-icon.allowance{background:var(--purple-light);color:var(--purple)}
+.entry-info{flex:1;min-width:0}
+.entry-desc{font-size:.83rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.entry-meta{font-size:.68rem;color:var(--text3);margin-top:2px}
+.entry-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.entry-amount{font-size:.9rem;font-weight:800;letter-spacing:-.02em}
+.entry-amount.income{color:var(--teal)}.entry-amount.expense{color:var(--red)}.entry-amount.mileage{color:var(--amber)}.entry-amount.allowance{color:var(--purple)}
+.entry-actions{display:flex;gap:3px}
+.act-btn{padding:3px 8px;border-radius:6px;border:none;font-family:var(--font);font-size:.68rem;font-weight:700;cursor:pointer;transition:all .12s ease}
+.act-edit{background:var(--teal-light);color:var(--teal)}
+.act-del{background:var(--red-light);color:var(--red)}
+.act-dup{background:var(--surface2);color:var(--text2)}
+.flag-badge{font-size:.57rem;background:var(--amber);color:#fff;padding:2px 5px;border-radius:100px;font-weight:700;margin-left:4px}
+.list-total{background:var(--bg2);border-radius:var(--radius);padding:12px 15px;font-size:.84rem;color:var(--text2);font-weight:600;text-align:right;border:1px solid var(--border);margin-bottom:12px}
+.list-total strong{color:var(--teal);font-size:1rem}
+.cat-tag{display:inline-block;padding:2px 7px;border-radius:100px;font-size:.64rem;font-weight:700;background:var(--teal-light);color:var(--teal)}
+.cat-tag.expense{background:var(--surface2);color:var(--text3)}
+.mileage-hero-card{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-mid) 100%);border-radius:var(--radius);padding:17px;margin-bottom:13px;color:#fff;box-shadow:0 4px 16px rgba(26,127,110,.3)}
+.mil-row{display:flex;align-items:center;margin-bottom:9px}
+.mil-stat{flex:1;text-align:center}
+.mil-val{font-size:1.45rem;font-weight:800;letter-spacing:-.03em}
+.mil-label{font-size:.64rem;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.mil-divider{width:1px;height:36px;background:rgba(255,255,255,.25)}
+.amap-note{font-size:.72rem;opacity:.85;text-align:center;line-height:1.4}
+.allowance-card{background:var(--purple-light);border:1px solid rgba(124,58,237,.2);border-radius:var(--radius);padding:13px;margin-bottom:12px}
+.allowance-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin-bottom:5px}
+.allowance-row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--purple);padding:3px 0}
+.notice-card{border-radius:var(--radius-sm);padding:11px 13px;font-size:.78rem;margin-bottom:10px;line-height:1.4}
+.notice-card.warning{background:var(--amber-light);color:#92400e;border:1px solid #fcd34d}
+.notice-card.info{background:var(--blue-light);color:#1e40af;border:1px solid #93c5fd}
+.sa-cards{display:flex;flex-direction:column;gap:10px}
+.sa-block{background:var(--bg2);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.sa-block-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:9px}
+.sa-line{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.81rem;color:var(--text2);border-bottom:1px solid var(--border)}
+.sa-line:last-child{border-bottom:none}
+.sa-line span:last-child{font-weight:700;color:var(--text)}
+.sa-line-total{font-weight:700;color:var(--text)}
+.sa-line-highlight{margin-top:4px;padding:10px 0 6px;font-size:.96rem;font-weight:800}
+.sa-line-highlight span:first-child{color:var(--text)}
+.sa-line-highlight span:last-child{color:var(--teal);font-size:1.1rem}
+.poa-box{background:var(--blue-light);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;border:1px solid #93c5fd}
+.poa-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1e40af;margin-bottom:6px}
+.poa-row{display:flex;justify-content:space-between;font-size:.81rem;color:#1e40af;padding:3px 0}
+.poa-row strong{font-weight:800}
+.rates-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
+.rate-pill{background:var(--surface2);border-radius:var(--radius-sm);padding:9px 11px;font-size:.7rem;color:var(--text2);line-height:1.5}
+.rate-pill strong{color:var(--teal);display:block;font-size:.8rem}
+.scotland-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--radius-sm);padding:12px 15px;border:1px solid var(--border);margin-bottom:10px;cursor:pointer}
+.scotland-toggle span{font-size:.84rem;font-weight:600;color:var(--text)}
+.toggle-sw{width:44px;height:24px;background:var(--border);border-radius:12px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-sw.on{background:var(--teal)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:var(--shadow-sm)}
+.toggle-sw.on .toggle-knob{transform:translateX(20px)}
+.settings-group{margin-bottom:17px}
+.settings-group-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:7px;padding:0 4px}
+.settings-card{background:var(--bg2);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow-sm);border:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
+.settings-field{display:flex;flex-direction:column;gap:4px}
+.settings-field label{font-size:.71rem;font-weight:700;color:var(--text2)}
+.settings-field input,.settings-field select{padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);font-family:var(--font);font-size:.88rem;color:var(--text);transition:border-color .12s;appearance:none;-webkit-appearance:none}
+.settings-field input:focus,.settings-field select:focus{outline:none;border-color:var(--teal);background:var(--bg2)}
+.settings-note{font-size:.78rem;color:var(--text2);line-height:1.5}
+.primary-btn{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s var(--ease);box-shadow:0 2px 8px rgba(26,127,110,.25)}
+.primary-btn:active{transform:scale(.98)}
+.secondary-btn{width:100%;padding:12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:.84rem;font-weight:600;color:var(--text);cursor:pointer;transition:all .12s ease;text-align:left}
+.secondary-btn:active{background:var(--border)}
+.danger-btn{width:100%;padding:12px;background:var(--red-light);border:1.5px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);font-family:var(--font);font-size:.84rem;font-weight:700;color:var(--red);cursor:pointer}
+.about-card{align-items:center;text-align:center}
+.about-logo{width:50px;height:50px;background:var(--teal);color:#fff;font-family:var(--serif);font-size:1.35rem;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.about-card p{font-size:.8rem;color:var(--text2);line-height:1.5}
+.disclaimer-note{font-size:.72rem!important;color:#92400e!important;background:var(--amber-light);border-radius:var(--radius-sm);padding:9px!important;border:1px solid #fcd34d;margin-top:4px}
+.backup-reminder{background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-sm);padding:10px 12px;font-size:.76rem;color:#92400e;margin-bottom:12px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-around;padding-top:8px;padding-bottom:env(safe-area-inset-bottom);z-index:90;box-shadow:0 -4px 20px rgba(0,0,0,.06);max-width:480px;margin:0 auto}
+.nav-tab{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:5px 0;border:none;background:none;cursor:pointer;color:var(--text3);font-family:var(--font);font-size:.56rem;font-weight:600;transition:color .12s ease;-webkit-tap-highlight-color:transparent;position:relative}
+.nav-tab.active{color:var(--teal)}
+.nav-tab.active::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:22px;height:3px;background:var(--teal);border-radius:0 0 3px 3px}
+.nav-icon{width:20px;height:20px;transition:transform .15s var(--ease)}
+.nav-tab.active .nav-icon{transform:scale(1.1)}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(28,25,23,.45);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex;animation:fadeIn .15s ease}
+.modal-sheet{background:var(--bg2);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:480px;max-height:93vh;overflow-y:auto;padding:12px 0 calc(env(safe-area-inset-bottom) + 24px);animation:slideUp .28s var(--ease)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px 13px;border-bottom:1px solid var(--border);margin-bottom:4px}
+.modal-title{font-family:var(--serif);font-size:1.12rem;font-style:italic;color:var(--text);font-weight:500}
+.modal-close-btn{width:29px;height:29px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;color:var(--text2);font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:12px 20px 0}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.74rem;font-weight:700;color:var(--text2);margin-bottom:5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);font-family:var(--font);font-size:.94rem;color:var(--text);transition:border-color .12s,background .12s;appearance:none;-webkit-appearance:none}
+.form-group select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--teal);background:var(--bg2)}
+.form-group textarea{resize:vertical;min-height:66px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-actions{display:flex;gap:9px;padding-top:6px}
+.btn-save{flex:1;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.92rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(26,127,110,.25)}
+.btn-save:active{transform:scale(.98)}
+.btn-cancel{padding:13px 17px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:.92rem;font-weight:600;color:var(--text2);cursor:pointer}
+.receipt-preview{width:100%;max-height:120px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);margin-top:6px;display:none}
+.receipt-preview.visible{display:block}
+.split-row{display:flex;align-items:center;gap:9px;margin-top:5px}
+.split-label{font-size:.78rem;color:var(--text2);white-space:nowrap}
+.split-result{font-size:.78rem;font-weight:700;color:var(--teal);min-width:56px;text-align:right}
+#toastContainer{position:fixed;top:calc(var(--header-h) + 14px);left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:calc(100% - 32px);max-width:330px}
+.toast{display:flex;align-items:center;gap:10px;background:var(--text);color:#fff;padding:11px 14px;border-radius:var(--radius-sm);font-size:.81rem;font-weight:600;box-shadow:var(--shadow-lg);animation:toastIn .25s var(--ease),toastOut .3s ease 2.7s forwards}
+.toast.success{background:var(--teal)}.toast.error{background:var(--red)}.toast.warn{background:var(--amber);color:#1c1917}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes viewIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes itemIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-7px)}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media(min-width:480px){#app{box-shadow:var(--shadow-lg)}body{background:#e8e4de;display:flex;justify-content:center;min-height:100vh}}
+@media(min-width:640px){.kpi-scroll{flex-wrap:wrap}.kpi-card{flex:0 0 calc(33% - 8px)}}
+
+.deadline-banner{background:linear-gradient(135deg,var(--amber) 0%,#f97316 100%);color:#fff;padding:10px 16px;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:10px;animation:viewIn .3s ease}
+.deadline-banner.urgent{background:linear-gradient(135deg,var(--red) 0%,#dc2626 100%)}
+.deadline-banner.safe{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-mid) 100%)}
+.deadline-banner-text{flex:1;line-height:1.3}
+.deadline-banner-dismiss{background:rgba(255,255,255,.25);border:none;color:#fff;font-size:.75rem;font-weight:700;padding:4px 9px;border-radius:6px;cursor:pointer;white-space:nowrap}
+</style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="onboarding-overlay hidden" id="onboarding">
+  <div class="ob-logo">£</div>
+  <div class="ob-title">Tax Companion</div>
+  <div class="ob-sub">Your UK Self Assessment tracker</div>
+  <div style="width:100%">
+    <div class="ob-step"><div class="ob-num">1</div><div class="ob-text"><h4>Log Income &amp; Expenses</h4><p>Add transactions as you go — no more end-of-year panic.</p></div></div>
+    <div class="ob-step"><div class="ob-num">2</div><div class="ob-text"><h4>Track Mileage &amp; Allowances</h4><p>Log journeys, pension contributions, Gift Aid and capital allowances.</p></div></div>
+    <div class="ob-step"><div class="ob-num">3</div><div class="ob-text"><h4>Live Tax Estimate</h4><p>Income Tax &amp; NI calculated instantly. Scottish rates supported.</p></div></div>
+    <div class="ob-step"><div class="ob-num">4</div><div class="ob-text"><h4>VAT Threshold &amp; Invoice Builder</h4><p>Tracks your £90k VAT limit and generates invoices in one tap.</p></div></div>
+  </div>
+  <button class="ob-btn" id="obStart">Get Started</button>
+</div>
+
+<div id="app">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-pill"><span class="logo-pound">£</span></div>
+      <div class="header-titles">
+        <span class="header-app-name">Tax Companion</span>
+        <span class="header-year" id="headerYear">2024/25</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="header-icon-btn" id="darkModeBtn" title="Dark mode">🌙</button>
+      <button class="header-icon-btn" id="searchToggleBtn" title="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="header-icon-btn" id="yearSwitcherBtn" title="Switch year">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="profit-bar-wrap"><div class="profit-bar-fill" id="profitBarFill" style="width:0%"></div></div>
+  <div id="deadlineBanner" style="display:none" class="deadline-banner">
+    <span class="deadline-banner-text" id="deadlineBannerText"></span>
+    <button class="deadline-banner-dismiss" onclick="dismissBanner()">Dismiss</button>
+  </div>
+
+
+  <div class="search-bar-wrap" id="searchBarWrap">
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" type="search" placeholder="Search transactions..." />
+    </div>
+    <div id="searchResults" class="entry-list" style="margin-top:10px;padding:0 0 8px"></div>
+  </div>
+
+  <div class="bottom-sheet-overlay" id="yearSheetOverlay">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <h3 class="sheet-title">Select Tax Year</h3>
+      <div class="year-list" id="yearList"></div>
+    </div>
+  </div>
+
+  <main class="main-content">
+
+    <section class="view active" id="view-dashboard">
+      <div class="view-hero">
+        <p class="hero-greeting" id="heroGreeting">Good morning 👋</p>
+        <h2 class="hero-tax-year" id="heroTaxYear">Tax Year 2024/25</h2>
+      </div>
+      <div class="kpi-scroll">
+        <div class="kpi-card kpi-income"><div class="kpi-icon">↑</div><div class="kpi-label">Income</div><div class="kpi-value" id="kpi-income">£0</div><div class="kpi-sub" id="kpi-income-sub">0 entries</div></div>
+        <div class="kpi-card kpi-expense"><div class="kpi-icon">↓</div><div class="kpi-label">Expenses</div><div class="kpi-value" id="kpi-expenses">£0</div><div class="kpi-sub" id="kpi-expense-sub">0 entries</div></div>
+        <div class="kpi-card kpi-profit"><div class="kpi-icon">◎</div><div class="kpi-label">Net Profit</div><div class="kpi-value" id="kpi-profit">£0</div><div class="kpi-sub">After expenses</div></div>
+        <div class="kpi-card kpi-tax"><div class="kpi-icon">⚡</div><div class="kpi-label">Est. Tax</div><div class="kpi-value" id="kpi-tax">£0</div><div class="kpi-sub">Tax + NI</div></div>
+        <div class="kpi-card kpi-poa"><div class="kpi-icon">📅</div><div class="kpi-label">Next PoA</div><div class="kpi-value" id="kpi-poa">£0</div><div class="kpi-sub">Payment on Acc.</div></div>
+        <div class="kpi-card kpi-vat"><div class="kpi-icon">📊</div><div class="kpi-label">VAT Meter</div><div class="kpi-value" id="kpi-vat">0%</div><div class="kpi-sub">of £90k limit</div></div>
+      </div>
+      <div class="quick-add-row">
+        <button class="quick-btn quick-income" onclick="openAddIncome()"><span class="quick-icon">＋</span><span>Income</span></button>
+        <button class="quick-btn quick-expense" onclick="openAddExpense()"><span class="quick-icon">＋</span><span>Expense</span></button>
+        <button class="quick-btn quick-mileage" onclick="openAddMileage()"><span class="quick-icon">🚗</span><span>Miles</span></button>
+      </div>
+      <div id="vatMeterSection"></div>
+      <div class="section-card">
+        <div class="section-header"><h3 class="section-title">Recent</h3><button class="section-link" onclick="showView('income')">See all</button></div>
+        <div id="recentList" class="recent-list"></div>
+        <div class="empty-card" id="recentEmpty"><div class="empty-icon">📋</div><p>Nothing yet — add your first entry above!</p></div>
+      </div>
+      <div class="section-card" id="budgetSection" style="display:none">
+        <div class="section-header"><h3 class="section-title">Monthly Budgets</h3><button class="section-link" onclick="showView('settings')">Edit</button></div>
+        <div class="budget-list" id="budgetList"></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><h3 class="section-title">Year Comparison</h3></div>
+        <div class="comparison-grid" id="comparisonGrid"></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><h3 class="section-title">HMRC Deadlines</h3></div>
+        <div id="deadlineList" class="deadline-list"></div>
+      </div>
+      <div class="section-card" id="breakdownCard" style="display:none">
+        <div class="section-header"><h3 class="section-title">Expense Breakdown</h3></div>
+        <div id="expenseBreakdown"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-income">
+      <div class="view-toolbar"><h2 class="view-title">Income</h2><button class="fab-inline" onclick="openAddIncome()">+ Add</button></div>
+      <div style="display:flex;gap:7px;margin-bottom:10px">
+        <button class="secondary-btn" style="flex:1;text-align:center;padding:9px;font-size:.78rem" onclick="openCSVImport('income')">📥 Import CSV</button>
+        <button class="secondary-btn" style="flex:1;text-align:center;padding:9px;font-size:.78rem" onclick="openInvoiceBuilder()">🧾 Invoice</button>
+        <button class="secondary-btn" style="flex:1;text-align:center;padding:9px;font-size:.78rem" onclick="exportXLSX()">📊 Excel</button>
+      </div>
+      <div class="filter-chips" id="incomeFilterChips"></div>
+      <div id="incomeList" class="entry-list"></div>
+      <div class="empty-card" id="incomeEmpty"><div class="empty-icon">💰</div><p>No income recorded yet.</p><button class="empty-cta" onclick="openAddIncome()">Add first income</button></div>
+      <div class="list-total" id="incomeTotalBar" style="display:none">Total: <strong id="incomeTotalDisplay">£0.00</strong></div>
+    </section>
+
+    <section class="view" id="view-expenses">
+      <div class="view-toolbar"><h2 class="view-title">Expenses</h2><button class="fab-inline" onclick="openAddExpense()">+ Add</button></div>
+      <div style="display:flex;gap:7px;margin-bottom:10px">
+        <button class="secondary-btn" style="flex:1;text-align:center;padding:9px;font-size:.78rem" onclick="openCSVImport('expenses')">📥 Import CSV</button>
+      </div>
+      <div class="filter-chips" id="expenseFilterChips"></div>
+      <div id="expenseList" class="entry-list"></div>
+      <div class="empty-card" id="expenseEmpty"><div class="empty-icon">🧾</div><p>No expenses recorded yet.</p><button class="empty-cta" onclick="openAddExpense()">Add first expense</button></div>
+      <div class="list-total" id="expenseTotalBar" style="display:none">Total: <strong id="expenseTotalDisplay">£0.00</strong></div>
+    </section>
+
+    <section class="view" id="view-mileage">
+      <div class="view-toolbar"><h2 class="view-title">Mileage</h2><button class="fab-inline" onclick="openAddMileage()">+ Add</button></div>
+      <div class="mileage-hero-card">
+        <div class="mil-row">
+          <div class="mil-stat"><div class="mil-val" id="totalMiles">0</div><div class="mil-label">Miles</div></div>
+          <div class="mil-divider"></div>
+          <div class="mil-stat"><div class="mil-val" id="mileageClaim">£0</div><div class="mil-label">Claimable</div></div>
+          <div class="mil-divider"></div>
+          <div class="mil-stat"><div class="mil-val" id="amapRate">45p</div><div class="mil-label">Per Mile</div></div>
+        </div>
+        <p class="amap-note">HMRC approved: 45p/mile (first 10,000), 25p thereafter</p>
+      </div>
+      <div id="mileageList" class="entry-list"></div>
+      <div class="empty-card" id="mileageEmpty"><div class="empty-icon">🚗</div><p>No journeys logged yet.</p><button class="empty-cta" onclick="openAddMileage()">Log first journey</button></div>
+    </section>
+
+    <section class="view" id="view-allowances">
+      <div class="view-toolbar"><h2 class="view-title">Allowances</h2><button class="fab-inline" onclick="openAddAllowance()">+ Add</button></div>
+      <div class="notice-card info">Pension contributions, Gift Aid, capital allowances and prior year losses all reduce your tax bill. Log them here.</div>
+      <div id="allowanceSummary" class="allowance-card" style="display:none"></div>
+      <div id="allowanceList" class="entry-list"></div>
+      <div class="empty-card" id="allowanceEmpty"><div class="empty-icon">🎁</div><p>No allowances recorded yet.</p><button class="empty-cta" onclick="openAddAllowance()">Add allowance</button></div>
+    </section>
+
+    <section class="view" id="view-summary">
+      <div class="view-toolbar"><h2 class="view-title">SA Summary</h2></div>
+      <div class="notice-card warning">⚠️ <strong>Estimate only.</strong> Always verify with a qualified accountant before filing.</div>
+      <div class="scotland-toggle" id="scotlandToggle">
+        <span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish Income Tax rates</span>
+        <div class="toggle-sw" id="scotlandSw"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="sa-cards">
+        <div class="sa-block">
+          <div class="sa-block-title">Income</div>
+          <div class="sa-line"><span>Self-employment</span><span id="sa-se-income">£0.00</span></div>
+          <div class="sa-line"><span>Other income</span><span id="sa-other-income">£0.00</span></div>
+          <div class="sa-line sa-line-total"><span>Total Income</span><span id="sa-total-income">£0.00</span></div>
+        </div>
+        <div class="sa-block">
+          <div class="sa-block-title">Deductions</div>
+          <div class="sa-line"><span>Business expenses</span><span id="sa-expenses">£0.00</span></div>
+          <div class="sa-line"><span>Mileage allowance</span><span id="sa-mileage">£0.00</span></div>
+          <div class="sa-line"><span>Pension contributions</span><span id="sa-pension">£0.00</span></div>
+          <div class="sa-line"><span>Gift Aid (grossed up)</span><span id="sa-giftaid">£0.00</span></div>
+          <div class="sa-line"><span>Capital allowances (AIA)</span><span id="sa-capital">£0.00</span></div>
+          <div class="sa-line"><span>Prior year losses</span><span id="sa-losses">£0.00</span></div>
+          <div class="sa-line"><span>Personal allowance</span><span id="sa-personal">£12,570</span></div>
+          <div class="sa-line sa-line-total"><span>Total Deductions</span><span id="sa-deductions">£0.00</span></div>
+        </div>
+        <div class="sa-block">
+          <div class="sa-block-title">Tax Calculation</div>
+          <div class="sa-line"><span>Taxable income</span><span id="sa-taxable">£0.00</span></div>
+          <div id="sa-tax-lines"></div>
+          <div class="sa-line"><span>Class 4 NI</span><span id="sa-ni">£0.00</span></div>
+          <div class="sa-line"><span>Class 2 NI</span><span id="sa-ni2">£0.00</span></div>
+          <div id="sa-student-line" style="display:none" class="sa-line"><span>Student loan repayment</span><span id="sa-student">£0.00</span></div>
+          <div class="sa-line sa-line-highlight"><span>Est. Total Due</span><span id="sa-total-tax">£0.00</span></div>
+        </div>
+        <div class="poa-box">
+          <div class="poa-title">📅 Payments on Account</div>
+          <div class="poa-row"><span>1st payment (31 Jan)</span><strong id="poa1">£0.00</strong></div>
+          <div class="poa-row"><span>2nd payment (31 Jul)</span><strong id="poa2">£0.00</strong></div>
+          <div class="poa-row"><span>Total advance payments</span><strong id="poaTotal">£0.00</strong></div>
+        </div>
+        <div class="sa-block"><div class="sa-block-title">Dividend Optimisation</div><div id="dividendCalc"></div></div>
+        <div class="sa-block"><div class="sa-block-title">Tax Rates Used</div><div class="rates-grid" id="ratesGrid"></div></div>
+      </div>
+      <br/>
+      <button class="primary-btn" onclick="exportPL()">📄 Export P&amp;L Statement</button>
+      <br/><br/>
+      <button class="secondary-btn" onclick="exportXLSX()" style="text-align:center">📊 Export Full Excel Workbook</button>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="view-toolbar"><h2 class="view-title">Settings</h2></div>
+      <div id="backupReminder" class="backup-reminder" style="display:none">
+        💾 It's been 30+ days since your last backup. <button onclick="exportJSON()" style="background:none;border:none;color:#92400e;font-weight:700;cursor:pointer;text-decoration:underline">Backup now</button>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Your Details</div>
+        <div class="settings-card">
+          <div class="settings-field"><label>Full Name</label><input type="text" id="settingName" placeholder="Your full name" /></div>
+          <div class="settings-field"><label>UTR Number</label><input type="text" id="settingUTR" placeholder="10-digit UTR" maxlength="10" inputmode="numeric" /></div>
+          <div class="settings-field"><label>NI Number</label><input type="text" id="settingNI" placeholder="AB123456C" maxlength="9" style="text-transform:uppercase" /></div>
+          <div class="settings-field"><label>Business / Trading Name</label><input type="text" id="settingBiz" placeholder="Optional" /></div>
+          <div class="settings-field"><label>Tax Region</label><select id="settingRegion"><option value="england">England / Wales / NI</option><option value="scotland">Scotland</option></select></div>
+          <div class="settings-field"><label>Student Loan Plan</label><select id="settingStudentLoan"><option value="none">None</option><option value="1">Plan 1</option><option value="2">Plan 2</option><option value="4">Plan 4 (Scotland)</option><option value="5">Plan 5</option></select></div>
+          <button class="primary-btn" id="saveSettings">Save Details</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Monthly Budget Targets</div>
+        <div class="settings-card">
+          <p class="settings-note">Set monthly spend targets per category. Shown as progress bars on the dashboard.</p>
+          <div id="budgetInputs"></div>
+          <button class="primary-btn" id="saveBudgets">Save Budgets</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Data</div>
+        <div class="settings-card">
+          <p class="settings-note">All data stored <strong>on your device only</strong>. Nothing is sent anywhere.</p>
+          <button class="secondary-btn" id="exportBtn">📥 Export CSV</button>
+          <button class="secondary-btn" id="exportXLSXBtn">📊 Export Excel (.xlsx)</button>
+          <button class="secondary-btn" id="exportJSONBtn">💾 Backup to JSON</button>
+          <button class="secondary-btn" id="importJSONBtn">📤 Restore from JSON</button>
+          <button class="secondary-btn" onclick="exportPL()">📄 Export P&amp;L Statement</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" />
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Storage</div>
+        <div class="settings-card">
+          <div id="storageWarning" style="display:none;font-size:.78rem;color:#92400e;background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-sm);padding:10px 12px;line-height:1.5"></div>
+          <div id="storageBar" style="margin-top:4px"></div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Danger Zone</div>
+        <div class="settings-card"><button class="danger-btn" id="clearDataBtn">🗑 Clear This Year's Data</button></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">About</div>
+        <div class="settings-card about-card">
+          <div class="about-logo">£</div>
+          <p><strong>Tax Companion</strong> v3.0</p>
+          <p>Free, offline-first Self Assessment tracker for UK taxpayers.</p>
+          <p class="disclaimer-note">Not affiliated with HMRC. Always verify with a qualified accountant before submitting your return.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-tab active" data-view="dashboard"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Home</span></button>
+    <button class="nav-tab" data-view="income"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg><span>Income</span></button>
+    <button class="nav-tab" data-view="expenses"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg><span>Expenses</span></button>
+    <button class="nav-tab" data-view="mileage"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Mileage</span></button>
+    <button class="nav-tab" data-view="allowances"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>Allowances</span></button>
+    <button class="nav-tab" data-view="summary"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Summary</span></button>
+    <button class="nav-tab" data-view="settings"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span>Settings</span></button>
+  </nav>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Add Entry</h3>
+      <button class="modal-close-btn" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<div id="toastContainer"></div>
+<script>
+'use strict';
+const DB={get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+let state={taxYear:currentTaxYear(),income:[],expenses:[],mileage:[],allowances:[],settings:{},scotland:false,budgets:{}};
+function currentTaxYear(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),d=n.getDate();return(m>3||(m===3&&d>=6))?`${y}/${y+1}`:`${y-1}/${y}`}
+function loadState(){state.settings=DB.get('tc_settings',{});state.taxYear=state.settings.taxYear||currentTaxYear();state.scotland=state.settings.scotland||false;state.budgets=DB.get('tc_budgets',{});reloadYearData()}
+function reloadYearData(){state.income=DB.get(`tc_income_${state.taxYear}`,[]);state.expenses=DB.get(`tc_expenses_${state.taxYear}`,[]);state.mileage=DB.get(`tc_mileage_${state.taxYear}`,[]);state.allowances=DB.get(`tc_allowances_${state.taxYear}`,[])}
+function checkStorageUsage(){
+  try{
+    let total=0;
+    for(const k in localStorage){if(localStorage.hasOwnProperty(k))total+=localStorage[k].length*2}// UTF-16 = 2 bytes per char
+    const usedMB=(total/1024/1024).toFixed(2);
+    const pct=total/(5*1024*1024)*100;// 5MB typical limit
+    const el=document.getElementById('storageWarning');
+    if(el){
+      if(pct>70){
+        el.style.display='';
+        el.textContent=`⚠️ Storage ${usedMB}MB used (${pct.toFixed(0)}% of ~5MB limit). Consider deleting receipt photos or backing up and clearing old data.`;
+      }else{
+        el.style.display='none';
+      }
+    }
+  }catch(e){}
+}
+function saveData(){
+  try{
+    DB.set(`tc_income_${state.taxYear}`,state.income);
+    DB.set(`tc_expenses_${state.taxYear}`,state.expenses);
+    DB.set(`tc_mileage_${state.taxYear}`,state.mileage);
+    DB.set(`tc_allowances_${state.taxYear}`,state.allowances);
+    checkStorageUsage();
+  }catch(e){
+    if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){
+      toast('⚠️ Storage full! Delete receipt photos or backup & clear old data.','error');
+    }
+  }
+}
+function prevYear(){const[a]=state.taxYear.split('/').map(Number);return`${a-1}/${a}`}
+const fmt=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:2}).format(n);
+const fmtS=n=>Math.abs(n)>=1000?`£${(n/1000).toFixed(1)}k`:fmt(n);
+const fmtD=iso=>new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const TAX_ENG={pa:12570,bands:[{limit:50270,rate:.20},{limit:125140,rate:.40},{limit:Infinity,rate:.45}],ni4:{low:12570,high:50270,r1:.06,r2:.02},ni2pw:3.45,ni2thr:12570};
+const TAX_SCO={pa:12570,bands:[{limit:14876,rate:.19},{limit:26561,rate:.20},{limit:43662,rate:.21},{limit:75000,rate:.42},{limit:125140,rate:.45},{limit:Infinity,rate:.48}],ni4:{low:12570,high:50270,r1:.06,r2:.02},ni2pw:3.45,ni2thr:12570};
+const STUDENT_LOANS={1:{thr:24990,rate:.09},2:{thr:27295,rate:.09},4:{thr:31395,rate:.09},5:{thr:25000,rate:.09}};
+const VAT_THRESHOLD=90000;
+function calcTax(profit,scotland=false,extraDed=0,studentPlan='none'){
+  if(profit<=0)return{incomeTax:0,ni4:0,ni2:0,student:0,total:0,taxableIncome:0,bands:[]};
+  const cfg=scotland?TAX_SCO:TAX_ENG;
+  const taxable=Math.max(0,profit-cfg.pa-extraDed);
+  let rem=taxable,incomeTax=0,prev=0,bands=[];
+  for(const b of cfg.bands){const top=Math.max(0,b.limit-cfg.pa-extraDed),inBand=Math.min(rem,top-prev);if(inBand<=0)break;const tax=inBand*b.rate;incomeTax+=tax;bands.push({rate:b.rate,amount:inBand,tax});rem-=inBand;prev=top;if(rem<=0)break}
+  const ni4Base=Math.max(0,Math.min(profit,cfg.ni4.high)-cfg.ni4.low),ni4Upper=Math.max(0,profit-cfg.ni4.high);
+  const ni4=(ni4Base*cfg.ni4.r1)+(ni4Upper*cfg.ni4.r2),ni2=profit>cfg.ni2thr?cfg.ni2pw*52:0;
+  let student=0;if(studentPlan!=='none'&&STUDENT_LOANS[studentPlan]){const sl=STUDENT_LOANS[studentPlan];student=Math.max(0,profit-sl.thr)*sl.rate}
+  return{incomeTax,ni4,ni2,student,total:incomeTax+ni4+ni2+student,taxableIncome:taxable,bands};
+}
+function calcMileage(m){return m<=10000?m*.45:(10000*.45)+((m-10000)*.25)}
+const INCOME_CATS={'self-employment':'Self Employment','employment':'Employment (PAYE)','rental':'Rental Income','dividends':'Dividends','interest':'Interest','other':'Other'};
+const EXPENSE_CATS={'office':'Office & Admin','travel':'Travel & Transport','equipment':'Equipment & Tech','marketing':'Marketing','professional':'Professional Services','training':'Training','phone':'Phone & Internet','clothing':'Clothing','stock':'Stock & Materials','bank':'Bank Charges','subsistence':'Subsistence','home-office':'Home Office','other':'Other'};
+const ALLOWANCE_CATS={'pension':'Pension Contribution','giftaid':'Gift Aid Donation','capital':'Capital Allowance (AIA)','loss':'Prior Year Loss','other':'Other Relief'};
+const CAT_ICONS={'self-employment':'💼','employment':'🏢','rental':'🏠','dividends':'📈','interest':'🏦','other':'💡','office':'🖥️','travel':'🚌','equipment':'🔧','marketing':'📢','professional':'⚖️','training':'🎓','phone':'📱','clothing':'👔','stock':'📦','bank':'💳','subsistence':'☕','home-office':'🏡','pension':'🏦','giftaid':'❤️','capital':'🏗️','loss':'📉'};
+const VIEWS=['dashboard','income','expenses','mileage','allowances','summary','settings'];
+function showView(n){VIEWS.forEach(v=>document.getElementById(`view-${v}`).classList.toggle('active',v===n));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.view===n));hideSearch();({dashboard:renderDashboard,income:()=>renderEntryList('income'),expenses:()=>renderEntryList('expenses'),mileage:renderMileage,allowances:renderAllowances,summary:renderSummary,settings:loadSettingsForm})[n]?.()}
+function isFlagged(e){return e.category==='subsistence'&&e.amount>25}
+function renderDeadlineBanner(){
+  const banner=document.getElementById('deadlineBanner');
+  const text=document.getElementById('deadlineBannerText');
+  if(!banner||!text)return;
+  // Check if dismissed today
+  const dismissedKey=`tc_banner_dismissed_${new Date().toDateString()}`;
+  if(DB.get(dismissedKey,false))return;
+  const now=new Date();
+  // Key upcoming deadlines
+  const targets=[
+    {date:new Date('2026-01-31'),label:'SA online filing & payment deadline',days:0},
+    {date:new Date('2025-07-31'),label:'1st Payment on Account due',days:0},
+    {date:new Date('2026-04-05'),label:'End of 2025/26 tax year',days:0},
+    {date:new Date('2025-10-31'),label:'Paper SA return deadline',days:0},
+  ];
+  // Find next upcoming within 90 days
+  let nearest=null;
+  for(const t of targets){
+    const days=Math.ceil((t.date-now)/86400000);
+    if(days>=0&&days<=90){t.days=days;nearest=t;break}
+  }
+  if(!nearest){banner.style.display='none';return}
+  banner.style.display='';
+  const {days,label}=nearest;
+  if(days===0){banner.className='deadline-banner urgent';text.textContent=`🚨 TODAY: ${label}!`}
+  else if(days<=14){banner.className='deadline-banner urgent';text.textContent=`🔴 ${days} day${days===1?'':'s'} left: ${label}`}
+  else if(days<=30){banner.className='deadline-banner';text.textContent=`⚠️ ${days} days: ${label}`}
+  else{banner.className='deadline-banner safe';text.textContent=`📅 ${days} days until: ${label}`}
+}
+function dismissBanner(){
+  const banner=document.getElementById('deadlineBanner');
+  if(banner)banner.style.display='none';
+  DB.set(`tc_banner_dismissed_${new Date().toDateString()}`,true);
+}
+function renderStorageBar(){
+  try{
+    let total=0;
+    for(const k in localStorage){if(localStorage.hasOwnProperty(k))total+=localStorage[k].length*2}
+    const usedMB=(total/1024/1024).toFixed(1);
+    const pct=Math.min(100,total/(5*1024*1024)*100);
+    const barEl=document.getElementById('storageBar');
+    if(!barEl)return;
+    const cls=pct>80?'over':pct>60?'warn':'ok';
+    barEl.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text2);margin-bottom:4px"><span>Storage used</span><span>${usedMB}MB / ~5MB</span></div><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div class="budget-bar-fill ${cls}" style="width:${pct.toFixed(0)}%"></div></div>`;
+  }catch(e){}
+}
+function updateProfitBar(){
+  const ti=state.income.reduce((a,b)=>a+b.amount,0),te=state.expenses.reduce((a,b)=>a+b.amount,0),tm=state.mileage.reduce((a,b)=>a+b.miles,0),profit=ti-te-calcMileage(tm);
+  const bar=document.getElementById('profitBarFill');if(!bar)return;
+  const pct=ti>0?Math.min(100,Math.max(0,(profit/ti)*100)):0;
+  bar.style.width=pct+'%';bar.className='profit-bar-fill'+(profit<0?' loss':'');
+}
+function renderDashboard(){
+  const ti=state.income.reduce((a,b)=>a+b.amount,0),te=state.expenses.reduce((a,b)=>a+b.amount,0),tm=state.mileage.reduce((a,b)=>a+b.miles,0),mc=calcMileage(tm);
+  const pension=state.allowances.filter(a=>a.category==='pension').reduce((a,b)=>a+b.amount,0);
+  const giftaidBonus=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount*.25,0);
+  const capital=state.allowances.filter(a=>a.category==='capital').reduce((a,b)=>a+b.amount,0);
+  const losses=state.allowances.filter(a=>a.category==='loss').reduce((a,b)=>a+b.amount,0);
+  const profit=ti-te-mc,sl=state.settings.studentLoan||'none';
+  const tax=calcTax(profit,state.scotland,pension+giftaidBonus+capital+losses,sl),poa=Math.max(0,tax.total)/2;
+  const vatPct=Math.min(100,(ti/VAT_THRESHOLD)*100);
+  animateKPI('kpi-income',ti);animateKPI('kpi-expenses',te);animateKPI('kpi-profit',profit);animateKPI('kpi-tax',tax.total);animateKPI('kpi-poa',poa);
+  document.getElementById('kpi-vat').textContent=vatPct.toFixed(0)+'%';
+  document.getElementById('kpi-income-sub').textContent=`${state.income.length} entr${state.income.length===1?'y':'ies'}`;
+  document.getElementById('kpi-expense-sub').textContent=`${state.expenses.length} entr${state.expenses.length===1?'y':'ies'}`;
+  const h=new Date().getHours(),name=state.settings.name?`, ${state.settings.name.split(' ')[0]}`:'';
+  document.getElementById('heroGreeting').textContent=(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+name+' 👋';
+  document.getElementById('heroTaxYear').textContent=`Tax Year ${state.taxYear}`;
+  updateProfitBar();renderDeadlineBanner();renderVATMeter(ti,vatPct);renderRecent();renderBudgetWidgets();renderComparison();renderDeadlines('deadlineList');renderBreakdown();checkBackupReminder();
+}
+function animateKPI(id,target){
+  const el=document.getElementById(id);if(!el)return;
+  // Parse current displayed value as start point so we animate from prev value not 0
+  const cur=el.textContent;
+  const start=parseFloat(cur.replace(/[^0-9.-]/g,''))*(cur.includes('k')?1000:1)||0;
+  const dur=450,startTime=performance.now();
+  function step(now){const p=Math.min(1,(now-startTime)/dur),ease=1-Math.pow(1-p,3),val=start+(target-start)*ease;el.textContent=fmtS(val);if(p<1)requestAnimationFrame(step)}
+  requestAnimationFrame(step);
+}
+function renderVATMeter(ti,pct){
+  const el=document.getElementById('vatMeterSection');if(!el)return;
+  if(ti<VAT_THRESHOLD*.5){el.innerHTML='';return}
+  const cls=pct>=90?'danger':pct>=75?'warn':'safe',remaining=VAT_THRESHOLD-ti;
+  el.innerHTML=`<div class="vat-meter-card"><div class="vat-meter-header"><span class="vat-meter-title">⚠️ VAT Threshold</span><span class="vat-meter-amount">${fmt(ti)} / £90k</span></div><div class="vat-bar-wrap"><div class="vat-bar-fill ${cls}" style="width:${pct}%"></div></div><div class="vat-bar-labels"><span>${pct.toFixed(0)}% used</span><span>${remaining>0?fmt(remaining)+' remaining':'⚠️ Exceeded!'}</span></div>${pct>=75?'<div style="font-size:.73rem;color:var(--red);margin-top:6px;font-weight:600">Consider speaking to an accountant about VAT registration.</div>':''}</div>`;
+}
+function renderRecent(){
+  const el=document.getElementById('recentList'),emp=document.getElementById('recentEmpty');
+  const all=[...state.income.map(i=>({...i,_t:'inc'})),...state.expenses.map(e=>({...e,_t:'exp'}))].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
+  if(!all.length){el.innerHTML='';emp.style.display='';return}
+  emp.style.display='none';
+  el.innerHTML=all.map(i=>`<div class="recent-item"><div class="recent-dot ${i._t}">${i._t==='inc'?'↑':'↓'}</div><div class="recent-info"><div class="recent-desc">${esc(i.description)}</div><div class="recent-meta">${fmtD(i.date)} · ${i._t==='inc'?INCOME_CATS[i.category]:EXPENSE_CATS[i.category]||i.category}</div></div><div class="recent-amt ${i._t}">${i._t==='inc'?'+':'-'}${fmt(i.amount)}</div></div>`).join('');
+}
+function renderBudgetWidgets(){
+  const now=new Date(),ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const cats=Object.keys(state.budgets).filter(c=>state.budgets[c]>0);
+  const sec=document.getElementById('budgetSection'),list=document.getElementById('budgetList');
+  if(!cats.length){if(sec)sec.style.display='none';return}
+  if(sec)sec.style.display='';
+  list.innerHTML=cats.map(cat=>{
+    const budget=state.budgets[cat],spent=state.expenses.filter(e=>e.category===cat&&e.date.startsWith(ym)).reduce((a,b)=>a+b.amount,0);
+    const pct=Math.min(100,(spent/budget)*100),cls=pct>=100?'over':pct>=80?'warn':'ok';
+    return`<div class="budget-item"><div class="budget-item-header"><span class="budget-cat">${CAT_ICONS[cat]||'💰'} ${EXPENSE_CATS[cat]||cat}</span><span class="budget-amounts">${fmt(spent)} / <strong>${fmt(budget)}</strong></span></div><div class="budget-bar-wrap"><div class="budget-bar-fill ${cls}" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+}
+function renderComparison(){
+  const py=prevYear(),pyi=DB.get(`tc_income_${py}`,[]).reduce((a,b)=>a+b.amount,0),pye=DB.get(`tc_expenses_${py}`,[]).reduce((a,b)=>a+b.amount,0),ti=state.income.reduce((a,b)=>a+b.amount,0),te=state.expenses.reduce((a,b)=>a+b.amount,0);
+  const diff=(c,p)=>{if(!p)return'';const pct=((c-p)/p*100).toFixed(0);return`<div class="comp-diff">${Number(pct)>0?'▲':'▼'} ${Math.abs(pct)}% vs ${py}</div>`};
+  document.getElementById('comparisonGrid').innerHTML=`<div class="comp-cell"><div class="comp-label">Income ${state.taxYear.split('/')[0]}</div><div class="comp-val ${ti>=pyi?'up':'down'}">${fmtS(ti)}</div>${diff(ti,pyi)}</div><div class="comp-cell"><div class="comp-label">Income ${py.split('/')[0]}</div><div class="comp-val">${fmtS(pyi)}</div></div><div class="comp-cell"><div class="comp-label">Expenses ${state.taxYear.split('/')[0]}</div><div class="comp-val">${fmtS(te)}</div>${diff(te,pye)}</div><div class="comp-cell"><div class="comp-label">Expenses ${py.split('/')[0]}</div><div class="comp-val">${fmtS(pye)}</div></div>`;
+}
+const DEADLINES=[{date:'2025-07-31',label:'1st Payment on Account'},{date:'2025-10-05',label:'Register for Self Assessment (new)'},{date:'2025-10-31',label:'Paper SA return deadline'},{date:'2026-01-31',label:'Online SA filing & balancing payment'},{date:'2026-01-31',label:'2nd Payment on Account'},{date:'2026-04-05',label:'End of 2025/26 tax year'}];
+function renderDeadlines(id){const el=document.getElementById(id),now=new Date();el.innerHTML=DEADLINES.map(d=>{const due=new Date(d.date),days=Math.ceil((due-now)/86400000);const cls=days<0?'past':days<=14?'urgent':days<=60?'soon':'';return`<div class="deadline-item ${cls}"><div class="dl-date">${fmtD(d.date)}</div><div class="dl-text">${d.label}${days===0?' — Today!':days<0?' ✓':''}</div></div>`}).join('')}
+function renderBreakdown(){
+  const card=document.getElementById('breakdownCard'),el=document.getElementById('expenseBreakdown');
+  if(!state.expenses.length){card.style.display='none';return}
+  card.style.display='';
+  const cats={};state.expenses.forEach(e=>{cats[e.category]=(cats[e.category]||0)+e.amount});
+  const total=Object.values(cats).reduce((a,b)=>a+b,0);
+  el.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([cat,amt])=>`<div style="display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:.9rem">${CAT_ICONS[cat]||'💰'}</span><span style="flex:1;font-size:.78rem;color:var(--text2)">${EXPENSE_CATS[cat]||cat}</span><div style="flex:1.5;background:var(--surface2);height:5px;border-radius:3px;overflow:hidden"><div style="height:100%;background:var(--teal);width:${total?(amt/total*100).toFixed(1):0}%;border-radius:3px"></div></div><span style="font-size:.78rem;font-weight:700;color:var(--text);min-width:48px;text-align:right">${fmt(amt)}</span></div>`).join('');
+}
+function checkBackupReminder(){const last=DB.get('tc_last_backup',0),el=document.getElementById('backupReminder');if(el)el.style.display=(Date.now()-last>30*24*60*60*1000&&state.income.length>0)?'':'none'}
+let activeFilters={income:'',expenses:''};
+function renderEntryList(type,searchTerm=''){
+  const isInc=type==='income',data=isInc?state.income:state.expenses,cats=isInc?INCOME_CATS:EXPENSE_CATS;
+  const listEl=document.getElementById(`${type}List`),empEl=document.getElementById(`${type}Empty`),totBar=document.getElementById(`${type}TotalBar`),totEl=document.getElementById(`${type}TotalDisplay`),chipEl=document.getElementById(`${type}FilterChips`);
+  const allCats=[...new Set(data.map(i=>i.category))],hasRec=data.some(i=>i.recurring);
+  chipEl.innerHTML=['',...(hasRec?['_rec']:[]),...allCats].map(cat=>{if(cat==='_rec')return`<button class="chip ${activeFilters[type]==='_rec'?'active':''}" onclick="setFilter('${type}','_rec')">🔁 Recurring</button>`;return`<button class="chip ${activeFilters[type]===cat?'active':''}" onclick="setFilter('${type}','${cat}')">${cat?(cats[cat]||cat):'All'}</button>`}).join('');
+  let items=[...data];
+  if(activeFilters[type]==='_rec')items=items.filter(i=>i.recurring);
+  else if(activeFilters[type])items=items.filter(i=>i.category===activeFilters[type]);
+  if(searchTerm)items=items.filter(i=>i.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const total=items.reduce((a,b)=>a+b.amount,0);
+  if(totEl)totEl.textContent=fmt(total);if(totBar)totBar.style.display=items.length?'':'none';
+  if(!items.length){listEl.innerHTML='';empEl.style.display='';return}
+  empEl.style.display='none';
+  listEl.innerHTML=items.map(item=>{
+    const flagged=!isInc&&isFlagged(item),bAmt=item.businessPct&&item.businessPct<100?item.amount*(item.businessPct/100):null;
+    return`<div class="entry-card${flagged?' flagged':''}"><div class="entry-icon ${isInc?'income':'expense'}">${CAT_ICONS[item.category]||'💰'}</div><div class="entry-info"><div class="entry-desc">${esc(item.description)}${item.recurring?' 🔁':''}${flagged?'<span class="flag-badge">⚠️</span>':''}</div><div class="entry-meta">${fmtD(item.date)} · <span class="cat-tag ${isInc?'':'expense'}">${cats[item.category]||item.category}</span>${bAmt!==null?` · ${item.businessPct}% biz`:''} ${item.receipt?'· 📎':''}</div></div><div class="entry-right"><div class="entry-amount ${isInc?'income':'expense'}">${isInc?'+':'-'}${fmt(bAmt!==null?bAmt:item.amount)}</div><div class="entry-actions"><button class="act-btn act-edit" onclick="${isInc?'openEditIncome':'openEditExpense'}('${item.id}')">Edit</button><button class="act-btn act-dup" onclick="${isInc?'dupIncome':'dupExpense'}('${item.id}')">Copy</button><button class="act-btn act-del" onclick="${isInc?'deleteIncome':'deleteExpense'}('${item.id}')">Del</button></div></div></div>`;
+  }).join('');
+}
+function setFilter(type,cat){activeFilters[type]=activeFilters[type]===cat?'':cat;renderEntryList(type)}
+function renderMileage(){
+  const tm=state.mileage.reduce((a,b)=>a+b.miles,0),claim=calcMileage(tm);
+  document.getElementById('totalMiles').textContent=tm.toLocaleString('en-GB');document.getElementById('mileageClaim').textContent=fmtS(claim);document.getElementById('amapRate').textContent=tm<=10000?'45p':'25p';
+  const listEl=document.getElementById('mileageList'),empEl=document.getElementById('mileageEmpty'),items=[...state.mileage].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!items.length){listEl.innerHTML='';empEl.style.display='';return}
+  empEl.style.display='none';
+  listEl.innerHTML=items.map(m=>`<div class="entry-card"><div class="entry-icon mileage">🚗</div><div class="entry-info"><div class="entry-desc">${esc(m.from)} → ${esc(m.to)}</div><div class="entry-meta">${fmtD(m.date)} · ${esc(m.purpose)} · ${m.miles} miles</div></div><div class="entry-right"><div class="entry-amount mileage">+${fmt(calcMileage(m.miles))}</div><div class="entry-actions"><button class="act-btn act-edit" onclick="openEditMileage('${m.id}')">Edit</button><button class="act-btn act-dup" onclick="dupMileage('${m.id}')">Copy</button><button class="act-btn act-del" onclick="deleteMileage('${m.id}')">Del</button></div></div></div>`).join('');
+}
+function renderAllowances(){
+  const listEl=document.getElementById('allowanceList'),empEl=document.getElementById('allowanceEmpty'),sumEl=document.getElementById('allowanceSummary');
+  const items=[...state.allowances].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!items.length){listEl.innerHTML='';empEl.style.display='';if(sumEl)sumEl.style.display='none';return}
+  empEl.style.display='none';
+  const pension=state.allowances.filter(a=>a.category==='pension').reduce((a,b)=>a+b.amount,0);
+  const giftaidRaw=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount,0);
+  const giftaidGross=giftaidRaw*(1/0.8);
+  const capital=state.allowances.filter(a=>a.category==='capital').reduce((a,b)=>a+b.amount,0);
+  const losses=state.allowances.filter(a=>a.category==='loss').reduce((a,b)=>a+b.amount,0);
+  if(sumEl){sumEl.style.display='';sumEl.innerHTML=`<div class="allowance-title">Total Deductions from Tax</div>${pension?`<div class="allowance-row"><span>Pension</span><span>${fmt(pension)}</span></div>`:''} ${giftaidRaw?`<div class="allowance-row"><span>Gift Aid (grossed up)</span><span>${fmt(giftaidGross)}</span></div>`:''} ${capital?`<div class="allowance-row"><span>Capital allowances</span><span>${fmt(capital)}</span></div>`:''} ${losses?`<div class="allowance-row"><span>Prior year losses</span><span>${fmt(losses)}</span></div>`:''}<div class="allowance-row" style="font-weight:800;border-top:1px solid rgba(124,58,237,.2);margin-top:5px;padding-top:5px"><span>Total</span><span>${fmt(pension+giftaidGross+capital+losses)}</span></div>`}
+  listEl.innerHTML=items.map(a=>`<div class="entry-card"><div class="entry-icon allowance">${CAT_ICONS[a.category]||'⭐'}</div><div class="entry-info"><div class="entry-desc">${esc(a.description)}</div><div class="entry-meta">${fmtD(a.date)} · <span class="cat-tag">${ALLOWANCE_CATS[a.category]||a.category}</span></div></div><div class="entry-right"><div class="entry-amount allowance">-${fmt(a.amount)}</div><div class="entry-actions"><button class="act-btn act-edit" onclick="openEditAllowance('${a.id}')">Edit</button><button class="act-btn act-del" onclick="deleteAllowance('${a.id}')">Del</button></div></div></div>`).join('');
+}
+function renderSummary(){
+  const sei=state.income.filter(i=>i.category==='self-employment').reduce((a,b)=>a+b.amount,0),oi=state.income.filter(i=>i.category!=='self-employment').reduce((a,b)=>a+b.amount,0),ti=sei+oi;
+  const te=state.expenses.reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0);
+  const tm=state.mileage.reduce((a,b)=>a+b.miles,0),mc=calcMileage(tm);
+  const pension=state.allowances.filter(a=>a.category==='pension').reduce((a,b)=>a+b.amount,0);
+  const giftaidBonus=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount*.25,0);
+  const giftaidRaw=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount,0);
+  const capital=state.allowances.filter(a=>a.category==='capital').reduce((a,b)=>a+b.amount,0);
+  const losses=state.allowances.filter(a=>a.category==='loss').reduce((a,b)=>a+b.amount,0);
+  const extraDed=pension+giftaidBonus+capital+losses,profit=ti-te-mc,sl=state.settings.studentLoan||'none';
+  const tax=calcTax(profit,state.scotland,extraDed,sl),poa=Math.max(0,tax.total)/2;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+  set('sa-se-income',fmt(sei));set('sa-other-income',fmt(oi));set('sa-total-income',fmt(ti));
+  set('sa-expenses',fmt(te));set('sa-mileage',fmt(mc));set('sa-pension',fmt(pension));set('sa-giftaid',fmt(giftaidRaw+giftaidBonus));set('sa-capital',fmt(capital));set('sa-losses',fmt(losses));
+  set('sa-deductions',fmt(te+mc+pension+giftaidBonus+capital+losses+12570));set('sa-taxable',fmt(Math.max(0,tax.taxableIncome)));
+  set('sa-ni',fmt(tax.ni4));set('sa-ni2',fmt(tax.ni2));set('sa-total-tax',fmt(tax.total));set('poa1',fmt(poa));set('poa2',fmt(poa));set('poaTotal',fmt(poa*2));
+  const slRow=document.getElementById('sa-student-line'),slEl=document.getElementById('sa-student');
+  if(slRow)slRow.style.display=tax.student>0?'':'none';if(slEl)slEl.textContent=fmt(tax.student);
+  const linesEl=document.getElementById('sa-tax-lines');if(linesEl)linesEl.innerHTML=tax.bands.map(b=>`<div class="sa-line"><span>Income tax (${(b.rate*100).toFixed(0)}%)</span><span>${fmt(b.tax)}</span></div>`).join('');
+  const cfg=state.scotland?TAX_SCO:TAX_ENG,rg=document.getElementById('ratesGrid');
+  if(rg)rg.innerHTML=`<div class="rate-pill">Personal Allowance<br><strong>£12,570</strong></div>`+cfg.bands.filter(b=>b.limit<Infinity).map(b=>`<div class="rate-pill">${(b.rate*100).toFixed(0)}% rate<br><strong>to £${b.limit.toLocaleString()}</strong></div>`).join('');
+  const sw=document.getElementById('scotlandSw');if(sw)sw.classList.toggle('on',state.scotland);
+  const dc=document.getElementById('dividendCalc');if(dc)dc.innerHTML=`<p style="font-size:.78rem;color:var(--text2);line-height:1.5">For limited company directors: salary of <strong>£12,570</strong> (NI threshold) + dividends minimises tax. First <strong>£500</strong> of dividends is tax-free. Basic-rate dividend tax: <strong>8.75%</strong>. Higher-rate: <strong>33.75%</strong>.</p><div class="sa-line" style="margin-top:8px"><span>Dividend allowance</span><span>£500</span></div><div class="sa-line"><span>Basic rate (up to £50,270)</span><span>8.75%</span></div><div class="sa-line"><span>Higher rate</span><span>33.75%</span></div>`;
+}
+function loadSettingsForm(){
+  const s=state.settings;
+  ['settingName','settingUTR','settingNI','settingBiz'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=s[id.replace('setting','').toLowerCase()]||''});
+  document.getElementById('settingName').value=s.name||'';
+  document.getElementById('settingRegion').value=s.region||'england';
+  document.getElementById('settingStudentLoan').value=s.studentLoan||'none';
+  const bi=document.getElementById('budgetInputs');
+  if(bi)bi.innerHTML=Object.entries(EXPENSE_CATS).map(([k,v])=>`<div class="settings-field"><label>${CAT_ICONS[k]||'💰'} ${v} (£/month)</label><input type="number" class="budget-input" data-cat="${k}" placeholder="e.g. 200" min="0" value="${state.budgets[k]||''}" /></div>`).join('');
+  checkBackupReminder();renderStorageBar();
+}
+function saveSettings(){
+  const region=document.getElementById('settingRegion').value;
+  state.scotland=region==='scotland';
+  state.settings={...state.settings,name:document.getElementById('settingName').value.trim(),utr:document.getElementById('settingUTR').value.trim(),ni:document.getElementById('settingNI').value.trim(),biz:document.getElementById('settingBiz').value.trim(),region,scotland:state.scotland,taxYear:state.taxYear,studentLoan:document.getElementById('settingStudentLoan').value};
+  DB.set('tc_settings',state.settings);toast('Details saved ✓','success');
+}
+function saveBudgets(){
+  document.querySelectorAll('.budget-input').forEach(inp=>{const v=parseFloat(inp.value);if(v>0)state.budgets[inp.dataset.cat]=v;else delete state.budgets[inp.dataset.cat]});
+  DB.set('tc_budgets',state.budgets);toast('Budgets saved ✓','success');
+}
+function buildYearPicker(){
+  const now=new Date(),y=now.getFullYear(),years=[];for(let i=y-3;i<=y;i++)years.push(`${i}/${i+1}`);
+  document.getElementById('yearList').innerHTML=years.reverse().map(ty=>`<button class="year-option ${ty===state.taxYear?'current':''}" onclick="selectYear('${ty}')">${ty}${ty===state.taxYear?` <span style="color:var(--teal)">✓</span>`:''}</button>`).join('');
+  document.getElementById('headerYear').textContent=state.taxYear;
+}
+function selectYear(ty){state.taxYear=ty;state.settings.taxYear=ty;DB.set('tc_settings',state.settings);reloadYearData();buildYearPicker();closeSheet('yearSheetOverlay');showView('dashboard');toast(`Switched to ${ty}`)}
+let searchVisible=false;
+function toggleSearch(){searchVisible=!searchVisible;document.getElementById('searchBarWrap').classList.toggle('visible',searchVisible);if(searchVisible)setTimeout(()=>document.getElementById('searchInput').focus(),100);else{document.getElementById('searchInput').value='';document.getElementById('searchResults').innerHTML=''}}
+function hideSearch(){searchVisible=false;document.getElementById('searchBarWrap').classList.remove('visible')}
+function doSearch(term){
+  const results=document.getElementById('searchResults');if(!term.trim()){results.innerHTML='';return}
+  const all=[...state.income.map(i=>({...i,_t:'inc'})),...state.expenses.map(e=>({...e,_t:'exp'}))].filter(i=>i.description.toLowerCase().includes(term.toLowerCase())||(INCOME_CATS[i.category]||EXPENSE_CATS[i.category]||'').toLowerCase().includes(term.toLowerCase())).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,12);
+  if(!all.length){results.innerHTML='<div style="color:var(--text3);padding:18px;text-align:center;font-size:.81rem">No results found</div>';return}
+  results.innerHTML=all.map(i=>`<div class="entry-card"><div class="entry-icon ${i._t==='inc'?'income':'expense'}">${CAT_ICONS[i.category]||'💰'}</div><div class="entry-info"><div class="entry-desc">${esc(i.description)}</div><div class="entry-meta">${fmtD(i.date)} · ${i._t==='inc'?INCOME_CATS[i.category]:EXPENSE_CATS[i.category]}</div></div><div class="entry-right"><div class="entry-amount ${i._t==='inc'?'income':'expense'}">${i._t==='inc'?'+':'-'}${fmt(i.amount)}</div></div></div>`).join('');
+}
+function toggleDarkMode(){document.body.classList.toggle('dark');DB.set('tc_dark',document.body.classList.contains('dark'));document.getElementById('darkModeBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙'}
+function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalOverlay').classList.add('open');setTimeout(()=>document.querySelector('#modalBody input,#modalBody select')?.focus(),120)}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+function openSheet(id){document.getElementById(id).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+function openAddIncome(){openIncomeModal(null)}function openEditIncome(id){openIncomeModal(state.income.find(i=>i.id===id))}
+function dupIncome(id){const item=state.income.find(i=>i.id===id);if(!item)return;state.income.push({...item,id:uid(),date:new Date().toISOString().split('T')[0]});saveData();renderEntryList('income');toast('Entry duplicated')}
+function openIncomeModal(item){
+  const today=new Date().toISOString().split('T')[0];
+  openModal(item?'Edit Income':'Add Income',`<div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="f-date" value="${item?.date||today}" /></div><div class="form-group"><label>Amount (£)</label><input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" value="${item?.amount||''}" inputmode="decimal" /></div></div><div class="form-group"><label>Description</label><input type="text" id="f-desc" placeholder="e.g. Invoice #001" value="${esc(item?.description||'')}" /></div><div class="form-group"><label>Category</label><select id="f-cat">${Object.entries(INCOME_CATS).map(([v,l])=>`<option value="${v}"${item?.category===v?' selected':''}>${CAT_ICONS[v]} ${l}</option>`).join('')}</select></div><div class="form-group"><label>Reference (optional)</label><input type="text" id="f-ref" placeholder="Invoice no." value="${esc(item?.reference||'')}" /></div><div class="form-group"><label>Notes (optional)</label><textarea id="f-notes">${esc(item?.notes||'')}</textarea></div><div class="form-group" style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);padding:11px 12px;border-radius:var(--radius-sm)"><label style="margin:0;font-size:.84rem;color:var(--text)">🔁 Recurring monthly</label><input type="checkbox" id="f-rec" ${item?.recurring?'checked':''} style="width:18px;height:18px;accent-color:var(--teal)" /></div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveIncome('${item?.id||''}')">Save</button></div>`);
+}
+function saveIncome(id){
+  const date=document.getElementById('f-date').value,amount=parseFloat(document.getElementById('f-amount').value),description=document.getElementById('f-desc').value.trim(),category=document.getElementById('f-cat').value,reference=document.getElementById('f-ref').value.trim(),notes=document.getElementById('f-notes').value.trim(),recurring=document.getElementById('f-rec').checked;
+  if(!date||isNaN(amount)||amount<=0||!description){toast('Please fill in all required fields','error');return}
+  if(id){const idx=state.income.findIndex(i=>i.id===id);if(idx>-1)state.income[idx]={...state.income[idx],date,amount,description,category,reference,notes,recurring}}
+  else state.income.push({id:uid(),date,amount,description,category,reference,notes,recurring});
+  saveData();closeModal();renderEntryList('income');renderDashboard();toast(id?'Income updated ✓':'Income added ✓','success');
+}
+function deleteIncome(id){if(!confirm('Delete this income entry?'))return;state.income=state.income.filter(i=>i.id!==id);saveData();renderEntryList('income');renderDashboard();toast('Entry deleted')}
+function openAddExpense(){openExpenseModal(null)}function openEditExpense(id){openExpenseModal(state.expenses.find(e=>e.id===id))}
+function dupExpense(id){const item=state.expenses.find(e=>e.id===id);if(!item)return;state.expenses.push({...item,id:uid(),date:new Date().toISOString().split('T')[0],receipt:'',photo:''});saveData();renderEntryList('expenses');toast('Entry duplicated')}
+function openExpenseModal(item){
+  const today=new Date().toISOString().split('T')[0];
+  openModal(item?'Edit Expense':'Add Expense',`<div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="f-date" value="${item?.date||today}" /></div><div class="form-group"><label>Amount (£)</label><input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" value="${item?.amount||''}" inputmode="decimal" /></div></div><div class="form-group"><label>Description</label><input type="text" id="f-desc" placeholder="e.g. Adobe Creative Cloud" value="${esc(item?.description||'')}" /></div><div class="form-group"><label>Category</label><select id="f-cat">${Object.entries(EXPENSE_CATS).map(([v,l])=>`<option value="${v}"${item?.category===v?' selected':''}>${CAT_ICONS[v]||'💰'} ${l}</option>`).join('')}</select></div><div class="form-group"><label>Business Use % <span style="color:var(--text3);font-weight:400">(split)</span></label><input type="number" id="f-pct" placeholder="100" min="1" max="100" value="${item?.businessPct||100}" inputmode="numeric" /><div class="split-row"><span class="split-label">Claimable:</span><span class="split-result" id="splitResult"></span></div></div><div class="form-group"><label>Receipt Ref (optional)</label><input type="text" id="f-receipt" placeholder="Receipt no." value="${esc(item?.receipt||'')}" /></div><div class="form-group"><label>📷 Receipt Photo</label><input type="file" id="f-photo" accept="image/*" capture="environment" style="padding:8px;font-size:.8rem" /><img class="receipt-preview ${item?.photo?'visible':''}" id="photoPreview" src="${item?.photo||''}" /></div><div class="form-group"><label>Notes (optional)</label><textarea id="f-notes">${esc(item?.notes||'')}</textarea></div><div class="form-group" style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);padding:11px 12px;border-radius:var(--radius-sm)"><label style="margin:0;font-size:.84rem;color:var(--text)">🔁 Recurring monthly</label><input type="checkbox" id="f-rec" ${item?.recurring?'checked':''} style="width:18px;height:18px;accent-color:var(--teal)" /></div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveExpense('${item?.id||''}','${item?.photo?'1':'0'}')">Save</button></div>`);
+  const upd=()=>{const a=parseFloat(document.getElementById('f-amount')?.value)||0,p=parseFloat(document.getElementById('f-pct')?.value)||100,el=document.getElementById('splitResult');if(el)el.textContent=a?fmt(a*(p/100)):''};
+  document.getElementById('f-amount')?.addEventListener('input',upd);document.getElementById('f-pct')?.addEventListener('input',upd);upd();
+  document.getElementById('f-photo')?.addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{const p=document.getElementById('photoPreview');p.src=ev.target.result;p.classList.add('visible')};r.readAsDataURL(file)});
+  if(item?.photo){const p=document.getElementById('photoPreview');if(p){p.src=item.photo;p.classList.add('visible')}}
+}
+function saveExpense(id,hasPhoto){
+  const date=document.getElementById('f-date').value,amount=parseFloat(document.getElementById('f-amount').value),description=document.getElementById('f-desc').value.trim(),category=document.getElementById('f-cat').value,businessPct=parseInt(document.getElementById('f-pct').value)||100,receipt=document.getElementById('f-receipt').value.trim(),notes=document.getElementById('f-notes').value.trim(),recurring=document.getElementById('f-rec').checked;
+  if(!date||isNaN(amount)||amount<=0||!description){toast('Please fill in all required fields','error');return}
+  const photoEl=document.getElementById('photoPreview');
+  let photo='';if(photoEl?.classList.contains('visible')&&photoEl.src.startsWith('data:'))photo=photoEl.src;else if(hasPhoto==='1'&&id){const ex=state.expenses.find(e=>e.id===id);photo=ex?.photo||''}
+  const entry={date,amount,description,category,businessPct,receipt,notes,recurring,photo};
+  if(id){const idx=state.expenses.findIndex(e=>e.id===id);if(idx>-1)state.expenses[idx]={...state.expenses[idx],...entry}}
+  else state.expenses.push({id:uid(),...entry});
+  saveData();closeModal();renderEntryList('expenses');renderDashboard();toast(id?'Expense updated ✓':'Expense added ✓','success');
+}
+function deleteExpense(id){if(!confirm('Delete this expense?'))return;state.expenses=state.expenses.filter(e=>e.id!==id);saveData();renderEntryList('expenses');renderDashboard();toast('Expense deleted')}
+function openAddMileage(){openMileageModal(null)}function openEditMileage(id){openMileageModal(state.mileage.find(m=>m.id===id))}
+function dupMileage(id){const item=state.mileage.find(m=>m.id===id);if(!item)return;state.mileage.push({...item,id:uid(),date:new Date().toISOString().split('T')[0]});saveData();renderMileage();toast('Journey duplicated')}
+function openMileageModal(item){
+  const today=new Date().toISOString().split('T')[0];
+  openModal(item?'Edit Journey':'Log Journey',`<div class="form-group"><label>Date</label><input type="date" id="f-date" value="${item?.date||today}" /></div><div class="form-row"><div class="form-group"><label>From</label><input type="text" id="f-from" placeholder="Home / Office" value="${esc(item?.from||'')}" /></div><div class="form-group"><label>To</label><input type="text" id="f-to" placeholder="Client" value="${esc(item?.to||'')}" /></div></div><div class="form-row"><div class="form-group"><label>Miles</label><input type="number" id="f-miles" placeholder="0" min="0" step="0.1" value="${item?.miles||''}" inputmode="decimal" /></div><div class="form-group"><label>Purpose</label><input type="text" id="f-purpose" placeholder="Client meeting" value="${esc(item?.purpose||'')}" /></div></div><div id="mileage-preview" style="background:var(--teal-light);border-radius:10px;padding:9px 12px;margin-bottom:4px;font-size:.78rem;color:var(--teal);font-weight:600;display:none"></div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveMileage('${item?.id||''}')">Save</button></div>`);
+  document.getElementById('f-miles')?.addEventListener('input',e=>{const mi=parseFloat(e.target.value)||0,p=document.getElementById('mileage-preview');if(mi>0){p.style.display='';p.textContent=`Claimable: ${fmt(calcMileage(mi))}`}else p.style.display='none'});
+}
+function saveMileage(id){
+  const date=document.getElementById('f-date').value,miles=parseFloat(document.getElementById('f-miles').value),from=document.getElementById('f-from').value.trim(),to=document.getElementById('f-to').value.trim(),purpose=document.getElementById('f-purpose').value.trim();
+  if(!date||isNaN(miles)||miles<=0||!from||!to||!purpose){toast('Please fill in all fields','error');return}
+  if(id){const idx=state.mileage.findIndex(m=>m.id===id);if(idx>-1)state.mileage[idx]={...state.mileage[idx],date,miles,from,to,purpose}}
+  else state.mileage.push({id:uid(),date,miles,from,to,purpose});
+  saveData();closeModal();renderMileage();renderDashboard();toast(id?'Journey updated ✓':'Journey logged ✓','success');
+}
+function deleteMileage(id){if(!confirm('Delete this journey?'))return;state.mileage=state.mileage.filter(m=>m.id!==id);saveData();renderMileage();renderDashboard();toast('Journey deleted')}
+function openAddAllowance(){openAllowanceModal(null)}function openEditAllowance(id){openAllowanceModal(state.allowances.find(a=>a.id===id))}
+function openAllowanceModal(item){
+  const today=new Date().toISOString().split('T')[0];
+  openModal(item?'Edit Allowance':'Add Allowance',`<div class="form-group"><label>Type</label><select id="f-cat">${Object.entries(ALLOWANCE_CATS).map(([v,l])=>`<option value="${v}"${item?.category===v?' selected':''}>${CAT_ICONS[v]||'⭐'} ${l}</option>`).join('')}</select></div><div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="f-date" value="${item?.date||today}" /></div><div class="form-group"><label>Amount (£)</label><input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" value="${item?.amount||''}" inputmode="decimal" /></div></div><div class="form-group"><label>Description</label><input type="text" id="f-desc" placeholder="e.g. SIPP contribution" value="${esc(item?.description||'')}" /></div><div class="notice-card info" style="margin-top:4px;font-size:.74rem">Gift Aid is grossed up by 25%. Pension contributions and capital allowances reduce taxable income directly.</div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveAllowance('${item?.id||''}')">Save</button></div>`);
+}
+function saveAllowance(id){
+  const date=document.getElementById('f-date').value,amount=parseFloat(document.getElementById('f-amount').value),description=document.getElementById('f-desc').value.trim(),category=document.getElementById('f-cat').value;
+  if(!date||isNaN(amount)||amount<=0||!description){toast('Please fill in all fields','error');return}
+  if(id){const idx=state.allowances.findIndex(a=>a.id===id);if(idx>-1)state.allowances[idx]={...state.allowances[idx],date,amount,description,category}}
+  else state.allowances.push({id:uid(),date,amount,description,category});
+  saveData();closeModal();renderAllowances();renderDashboard();toast(id?'Updated ✓':'Allowance added ✓','success');
+}
+function deleteAllowance(id){if(!confirm('Delete this allowance?'))return;state.allowances=state.allowances.filter(a=>a.id!==id);saveData();renderAllowances();renderDashboard();toast('Deleted')}
+function openCSVImport(type='income'){
+  openModal('Import from CSV',`<div class="notice-card info" style="margin-bottom:10px">Format: <strong>date, description, amount, category</strong> (one per line). Date: DD/MM/YYYY or YYYY-MM-DD.</div><div class="form-group"><label>CSV Data</label><textarea id="csv-input" style="min-height:120px;font-family:monospace;font-size:.75rem" placeholder="01/04/2025, Invoice #001, 1500.00, self-employment&#10;15/04/2025, Adobe CC, 54.99, office"></textarea></div><div class="form-group"><label>Import as</label><select id="csv-type"><option value="income" ${type==='income'?'selected':''}>Income</option><option value="expenses" ${type==='expenses'?'selected':''}>Expense</option></select></div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="processCSVImport()">Import</button></div>`);
+}
+function processCSVImport(){
+  const raw=document.getElementById('csv-input').value.trim(),type=document.getElementById('csv-type').value;
+  if(!raw){toast('Paste some CSV data first','error');return}
+  const lines=raw.split('\n').filter(l=>l.trim()),imported=[];
+  for(const line of lines){
+    const parts=line.split(',').map(s=>s.trim().replace(/^"|"$/g,''));if(parts.length<3)continue;
+    let[dateRaw,desc,amtRaw,cat]=parts;const amount=parseFloat(amtRaw?.replace(/[£,]/g,''));if(isNaN(amount)||amount<=0)continue;
+    let date=dateRaw;if(dateRaw.includes('/')){const[d,m,y]=dateRaw.split('/');date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`}
+    imported.push({id:uid(),date,amount,description:desc||'Imported',category:cat||'other',reference:'',notes:'CSV import',recurring:false,photo:'',businessPct:100});
+  }
+  if(!imported.length){toast('No valid rows found','error');return}
+  if(type==='income')state.income.push(...imported);else state.expenses.push(...imported);
+  saveData();closeModal();renderEntryList(type);renderDashboard();toast(`${imported.length} entries imported ✓`,'success');
+}
+function openInvoiceBuilder(){
+  openModal('Create Invoice',`<div class="form-group"><label>Client Name</label><input type="text" id="inv-client" placeholder="Client Ltd" /></div><div class="form-group"><label>Invoice Number</label><input type="text" id="inv-num" value="INV-${Date.now().toString().slice(-4)}" /></div><div class="form-group"><label>Description</label><input type="text" id="inv-desc" placeholder="Services rendered" /></div><div class="form-row"><div class="form-group"><label>Amount (£ excl. VAT)</label><input type="number" id="inv-amount" placeholder="0.00" step="0.01" inputmode="decimal" /></div><div class="form-group"><label>VAT Rate</label><select id="inv-vat"><option value="0">No VAT</option><option value="20">20% Standard</option><option value="5">5% Reduced</option></select></div></div><div class="form-group"><label>Due Date</label><input type="date" id="inv-due" value="${new Date(Date.now()+30*86400000).toISOString().split('T')[0]}" /></div><div class="form-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="generateInvoice()">Generate</button></div>`);
+}
+function generateInvoice(){
+  const client=document.getElementById('inv-client').value.trim()||'Client',num=document.getElementById('inv-num').value.trim(),desc=document.getElementById('inv-desc').value.trim()||'Services',amount=parseFloat(document.getElementById('inv-amount').value)||0,vatRate=parseInt(document.getElementById('inv-vat').value),due=document.getElementById('inv-due').value;
+  // Check invoice number uniqueness
+  if(num){
+    const existing=state.income.filter(i=>i.reference&&i.reference.trim().toLowerCase()===num.trim().toLowerCase());
+    if(existing.length>0){
+      if(!confirm(`Invoice number "${num}" already exists (${existing[0].description}). Generate anyway?`))return;
+    }
+  }
+  const vat=amount*(vatRate/100),total=amount+vat,today=new Date().toLocaleDateString('en-GB'),biz=state.settings.biz||'Your Business',name=state.settings.name||'',utr=state.settings.utr||'';
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${num}</title><style>body{font-family:Arial,sans-serif;max-width:620px;margin:40px auto;padding:0 24px;color:#1c1917}h1{font-size:1.9rem;color:#1a7f6e;margin:0}.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;border-bottom:3px solid #1a7f6e;padding-bottom:18px}.meta{text-align:right;font-size:.84rem;color:#57534e}.to{font-size:.84rem;color:#57534e;margin-bottom:28px;background:#f5f2ed;padding:13px;border-radius:8px}table{width:100%;border-collapse:collapse;margin-bottom:22px}th{background:#f0ede8;padding:9px 11px;text-align:left;font-size:.79rem;color:#57534e}td{padding:9px 11px;border-bottom:1px solid #e2ddd6;font-size:.84rem}.totals{text-align:right}.totals div{padding:3px 0;font-size:.84rem}.total-final{font-size:1.05rem;font-weight:800;color:#1a7f6e;padding-top:7px;border-top:2px solid #1a7f6e}.footer{margin-top:36px;font-size:.72rem;color:#a8a29e;border-top:1px solid #e2ddd6;padding-top:10px}@media print{body{margin:16px}}</style></head><body><div class="hdr"><div><h1>INVOICE</h1><div style="font-size:.84rem;color:#57534e;margin-top:3px">${num}</div></div><div class="meta"><div style="font-size:1.05rem;font-weight:700">${esc(biz)}</div>${name?`<div>${esc(name)}</div>`:''}${utr?`<div>UTR: ${utr}</div>`:''}<div>Date: ${today}</div><div>Due: ${new Date(due).toLocaleDateString('en-GB')}</div></div></div><div class="to"><strong>Bill To:</strong><br>${esc(client)}</div><table><thead><tr><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody><tr><td>${esc(desc)}</td><td style="text-align:right">${fmt(amount)}</td></tr></tbody></table><div class="totals">${vatRate>0?`<div>Subtotal: ${fmt(amount)}</div><div>VAT (${vatRate}%): ${fmt(vat)}</div>`:''}<div class="total-final">Total Due: ${fmt(total)}</div></div><div class="footer">Please pay within 30 days. Generated by Tax Companion.${utr?` UTR: ${utr}`:''}</div></body></html>`;
+  dl(`Invoice-${num}.html`,html,'text/html');closeModal();toast('Invoice exported — open in browser, then File → Print → Save as PDF');
+  if(amount>0&&confirm('Add this invoice to your income records?')){state.income.push({id:uid(),date:new Date().toISOString().split('T')[0],amount,description:`Invoice ${num} – ${client}`,category:'self-employment',reference:num,notes:'',recurring:false});saveData();renderDashboard()}
+}
+function exportPL(){
+  const ti=state.income.reduce((a,b)=>a+b.amount,0),te=state.expenses.reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0),tm=state.mileage.reduce((a,b)=>a+b.miles,0),mc=calcMileage(tm),profit=ti-te-mc;
+  const pension=state.allowances.filter(a=>a.category==='pension').reduce((a,b)=>a+b.amount,0);
+  const giftaidBonus=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount*.25,0);
+  const capital=state.allowances.filter(a=>a.category==='capital').reduce((a,b)=>a+b.amount,0);
+  const losses=state.allowances.filter(a=>a.category==='loss').reduce((a,b)=>a+b.amount,0);
+  const sl=state.settings.studentLoan||'none',tax=calcTax(profit,state.scotland,pension+giftaidBonus+capital+losses,sl);
+  const name=state.settings.name||'',biz=state.settings.biz||'Tax Companion',now=new Date().toLocaleDateString('en-GB');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>P&L ${state.taxYear}</title><style>body{font-family:Arial,sans-serif;max-width:640px;margin:40px auto;padding:0 20px;color:#1c1917}h1{font-size:1.35rem;border-bottom:2px solid #1a7f6e;padding-bottom:7px;color:#1a7f6e}h2{font-size:.85rem;margin:18px 0 7px;color:#57534e;text-transform:uppercase;letter-spacing:.05em}table{width:100%;border-collapse:collapse;margin-bottom:8px}td{padding:7px 0;border-bottom:1px solid #e2ddd6;font-size:.83rem}td:last-child{text-align:right;font-weight:600}.total td{font-weight:800;font-size:.95rem;border-top:2px solid #1a7f6e;border-bottom:none}.highlight td{color:#1a7f6e}.meta{font-size:.76rem;color:#a8a29e;margin-bottom:18px}.disc{font-size:.71rem;color:#a8a29e;margin-top:36px;padding-top:10px;border-top:1px solid #e2ddd6}@media print{body{margin:16px}}</style></head><body><h1>Profit &amp; Loss Statement</h1><div class="meta">${esc(biz)}${name?' · '+esc(name):''} · Tax Year ${state.taxYear} · ${now}</div><h2>Income</h2><table>${state.income.map(i=>`<tr><td>${fmtD(i.date)} ${esc(i.description)}</td><td>${fmt(i.amount)}</td></tr>`).join('')}<tr class="total"><td>Total Income</td><td>${fmt(ti)}</td></tr></table><h2>Business Expenses</h2><table>${state.expenses.map(e=>`<tr><td>${fmtD(e.date)} ${esc(e.description)}${e.businessPct&&e.businessPct<100?` (${e.businessPct}%)`:''}</td><td>${fmt(e.businessPct?e.amount*(e.businessPct/100):e.amount)}</td></tr>`).join('')}${state.mileage.length?`<tr><td>Mileage (${tm.toLocaleString()} miles)</td><td>${fmt(mc)}</td></tr>`:''}<tr class="total"><td>Total Expenses</td><td>${fmt(te+mc)}</td></tr></table>${state.allowances.length?`<h2>Allowances &amp; Reliefs</h2><table>${state.allowances.map(a=>`<tr><td>${fmtD(a.date)} ${esc(a.description)}</td><td>${fmt(a.amount)}</td></tr>`).join('')}</table>`:''}<h2>Summary</h2><table><tr><td>Net Profit</td><td>${fmt(profit)}</td></tr><tr><td>Estimated Income Tax</td><td>${fmt(tax.incomeTax)}</td></tr><tr><td>NI Class 4</td><td>${fmt(tax.ni4)}</td></tr><tr><td>NI Class 2</td><td>${fmt(tax.ni2)}</td></tr>${tax.student>0?`<tr><td>Student Loan</td><td>${fmt(tax.student)}</td></tr>`:''}<tr class="total highlight"><td>Estimated Total Due</td><td>${fmt(tax.total)}</td></tr></table><div class="disc">Generated by Tax Companion v3. Not affiliated with HMRC. Always verify with a qualified accountant before submitting your return.</div></body></html>`;
+  dl(`PL-${state.taxYear.replace('/','_')}.html`,html,'text/html');toast('P&L exported — open in browser, print as PDF');
+}
+
+function exportXLSX(){
+  if(typeof XLSX==='undefined'){toast('📶 Excel export needs internet to load the library. Connect and try again.','error');return}
+  const wb=XLSX.utils.book_new();
+  const teal='1A7F6E',amber='F59E0B',red='EF4444',purple='7C3AED',grey='57534E',lightGrey='F0EDE8',white='FFFFFF',darkText='1C1917';
+  const hdrStyle={font:{bold:true,color:{rgb:white},sz:11},fill:{fgColor:{rgb:teal}},alignment:{horizontal:'center'},border:{bottom:{style:'medium',color:{rgb:teal}}}};
+  const numFmt='£#,##0.00';const pctFmt='0%';const dateFmt='dd/mm/yyyy';
+
+  // ── Helper: create styled cell ──────────────────────────────
+  function C(v,opts={}){
+    const cell={v,t:typeof v==='number'?'n':typeof v==='boolean'?'b':'s'};
+    if(opts.formula){cell.f=opts.formula;cell.t='n'}
+    if(opts.fmt)cell.z=opts.fmt;
+    if(opts.style)cell.s=opts.style;
+    return cell;
+  }
+  function numCell(v,formula,fmt=numFmt){return C(v,{formula,fmt})}
+  function hdr(v){return C(v,{style:hdrStyle})}
+  function bold(v,fmt){const cell=C(v,fmt?{fmt}:{});cell.s={font:{bold:true,sz:11}};return cell}
+  function total(v,formula,fmt=numFmt){const cell=numCell(v,formula,fmt);cell.s={font:{bold:true,sz:11},fill:{fgColor:{rgb:lightGrey}},border:{top:{style:'medium',color:{rgb:teal}}}};return cell}
+  function highlight(v,formula,fmt=numFmt){const cell=numCell(v,formula,fmt);cell.s={font:{bold:true,sz:12,color:{rgb:teal}},fill:{fgColor:{rgb:'E8F5F2'}},border:{top:{style:'medium',color:{rgb:teal}},bottom:{style:'medium',color:{rgb:teal}}}};return cell}
+
+  function sheetFromAoA(data){
+    const ws={};let maxCol=0;
+    data.forEach((row,r)=>{
+      row.forEach((cell,c)=>{
+        if(cell==null)return;
+        const addr=XLSX.utils.encode_cell({r,c});
+        ws[addr]=typeof cell==='object'?cell:{v:cell,t:typeof cell==='number'?'n':'s'};
+        if(c>maxCol)maxCol=c;
+      });
+    });
+    ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:data.length-1,c:maxCol}});
+    return ws;
+  }
+
+  const ty=state.taxYear,name=state.settings.name||'',biz=state.settings.biz||'Tax Companion',utr=state.settings.utr||'';
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 1: INCOME
+  // ══════════════════════════════════════════════════════════════
+  const incRows=state.income.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const incData=[
+    [hdr('Date'),hdr('Description'),hdr('Category'),hdr('Reference'),hdr('Recurring'),hdr('Amount (£)')]
+  ];
+  incRows.forEach((row,i)=>{
+    const r=i+2;// row index in sheet (1-based, header is row 1)
+    incData.push([
+      C(row.date,{fmt:dateFmt}),
+      C(row.description),
+      C(INCOME_CATS[row.category]||row.category),
+      C(row.reference||''),
+      C(row.recurring?'Yes':'No'),
+      numCell(row.amount,null,numFmt)
+    ]);
+  });
+  const incTotalRow=incRows.length+2;
+  incData.push([null,null,null,null,bold('TOTAL INCOME'),total(state.income.reduce((a,b)=>a+b.amount,0),`SUM(F2:F${incTotalRow-1})`)]);
+  const wsIncome=sheetFromAoA(incData);
+  wsIncome['!cols']=[{wch:14},{wch:36},{wch:22},{wch:18},{wch:11},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsIncome,'Income');
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 2: EXPENSES
+  // ══════════════════════════════════════════════════════════════
+  const expRows=state.expenses.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const expData=[
+    [hdr('Date'),hdr('Description'),hdr('Category'),hdr('Receipt Ref'),hdr('Recurring'),hdr('Full Amount (£)'),hdr('Business %'),hdr('Claimable (£)'),hdr('Notes')]
+  ];
+  expRows.forEach((row,i)=>{
+    const r=i+2;
+    const pct=(row.businessPct||100)/100;
+    expData.push([
+      C(row.date,{fmt:dateFmt}),
+      C(row.description),
+      C(EXPENSE_CATS[row.category]||row.category),
+      C(row.receipt||''),
+      C(row.recurring?'Yes':'No'),
+      numCell(row.amount,null,numFmt),
+      C(pct,{fmt:pctFmt}),
+      // Formula: Full Amount * Business %
+      numCell(row.amount*pct,`F${r}*G${r}`,numFmt),
+      C(row.notes||'')
+    ]);
+  });
+  const expTotalRow=expRows.length+2;
+  expData.push([null,null,null,null,bold('TOTAL'),
+    total(state.expenses.reduce((a,b)=>a+b.amount,0),`SUM(F2:F${expTotalRow-1})`),
+    null,
+    total(state.expenses.reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0),`SUM(H2:H${expTotalRow-1})`)
+  ]);
+  const wsExpenses=sheetFromAoA(expData);
+  wsExpenses['!cols']=[{wch:14},{wch:36},{wch:22},{wch:16},{wch:11},{wch:16},{wch:12},{wch:14},{wch:28}];
+  XLSX.utils.book_append_sheet(wb,wsExpenses,'Expenses');
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 3: MILEAGE
+  // ══════════════════════════════════════════════════════════════
+  const milRows=state.mileage.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const milData=[
+    [hdr('Date'),hdr('From'),hdr('To'),hdr('Purpose'),hdr('Miles'),hdr('Running Total'),hdr('Rate (£/mile)'),hdr('Claimable (£)')]
+  ];
+  let cumMiles=0;
+  milRows.forEach((row,i)=>{
+    const r=i+2;
+    cumMiles+=row.miles;
+    // Rate: 0.45 if cumulative <=10000, else 0.25
+    const rate=cumMiles<=10000?0.45:0.25;
+    milData.push([
+      C(row.date,{fmt:dateFmt}),
+      C(row.from),
+      C(row.to),
+      C(row.purpose),
+      C(row.miles,{fmt:'0.0'}),
+      // Running total formula
+      numCell(cumMiles,i===0?`E${r}`:`F${r-1}+E${r}`,'0.0'),
+      // Rate formula: IF running total <= 10000, 0.45, 0.25
+      numCell(rate,`IF(F${r}<=10000,0.45,0.25)`,'£0.00'),
+      // Claimable = miles * rate
+      numCell(row.miles*rate,`E${r}*G${r}`,numFmt)
+    ]);
+  });
+  const milTotalRow=milRows.length+2;
+  const totalMiles=milRows.reduce((a,b)=>a+b.miles,0);
+  const totalClaim=calcMileage(totalMiles);
+  milData.push([null,null,null,bold('TOTAL'),
+    total(totalMiles,`SUM(E2:E${milTotalRow-1})`,'0.0'),
+    null,null,
+    total(totalClaim,`SUM(H2:H${milTotalRow-1})`)
+  ]);
+  milData.push([]);
+  milData.push([C('Note:'),C('Rate is 45p/mile for first 10,000 miles and 25p/mile thereafter (HMRC AMAP 2024/25)')]);
+  const wsMileage=sheetFromAoA(milData);
+  wsMileage['!cols']=[{wch:14},{wch:22},{wch:22},{wch:26},{wch:10},{wch:14},{wch:13},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsMileage,'Mileage');
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 4: ALLOWANCES
+  // ══════════════════════════════════════════════════════════════
+  const allRows=state.allowances.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const allData=[
+    [hdr('Date'),hdr('Type'),hdr('Description'),hdr('Amount Paid (£)'),hdr('Tax Relief Value (£)'),hdr('Notes')]
+  ];
+  allRows.forEach((row,i)=>{
+    const r=i+2;
+    // Gift Aid: grossed up by 25%, others: face value
+    const reliefFormula=row.category==='giftaid'?`D${r}*1.25`:`D${r}`;
+    const reliefVal=row.category==='giftaid'?row.amount*1.25:row.amount;
+    allData.push([
+      C(row.date,{fmt:dateFmt}),
+      C(ALLOWANCE_CATS[row.category]||row.category),
+      C(row.description),
+      numCell(row.amount,null,numFmt),
+      numCell(reliefVal,reliefFormula,numFmt),
+      C(row.category==='giftaid'?'Grossed up by 25% (basic rate tax relief included)':row.category==='pension'?'Full amount deducted from taxable income':row.category==='capital'?'Annual Investment Allowance applied':row.category==='loss'?'Carried forward loss offset against profit':'')
+    ]);
+  });
+  const allTotalRow=allRows.length+2;
+  const totalPaid=allRows.reduce((a,b)=>a+b.amount,0);
+  const totalRelief=allRows.reduce((a,b)=>a+(b.category==='giftaid'?b.amount*1.25:b.amount),0);
+  allData.push([null,null,bold('TOTAL'),
+    total(totalPaid,`SUM(D2:D${allTotalRow-1})`),
+    total(totalRelief,`SUM(E2:E${allTotalRow-1})`)
+  ]);
+  const wsAllowances=sheetFromAoA(allData);
+  wsAllowances['!cols']=[{wch:14},{wch:24},{wch:32},{wch:16},{wch:18},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,wsAllowances,'Allowances');
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 5: MONTHLY SUMMARY
+  // ══════════════════════════════════════════════════════════════
+  const [startY]=state.taxYear.split('/').map(Number);
+  const monthNames=['April','May','June','July','August','September','October','November','December','January','February','March'];
+  const monthData=[
+    [hdr('Month'),hdr('Tax Year'),hdr('Income (£)'),hdr('Expenses (£)'),hdr('Mileage Claim (£)'),hdr('Net Profit (£)'),hdr('Running Profit (£)')]
+  ];
+  let runningProfit=0;
+  monthNames.forEach((mon,i)=>{
+    const yr=i<9?startY:startY+1;
+    const mNum=i<9?i+4:i-8;// actual month number 1-12
+    const mStr=`${yr}-${String(mNum).padStart(2,'0')}`;
+    const monInc=state.income.filter(x=>x.date.startsWith(mStr)).reduce((a,b)=>a+b.amount,0);
+    const monExp=state.expenses.filter(x=>x.date.startsWith(mStr)).reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0);
+    const monMil=calcMileage(state.mileage.filter(x=>x.date.startsWith(mStr)).reduce((a,b)=>a+b.miles,0));
+    const monProfit=monInc-monExp-monMil;
+    runningProfit+=monProfit;
+    const r=i+2;
+    monthData.push([
+      C(`${mon} ${yr}`),
+      C(state.taxYear),
+      numCell(monInc,null,numFmt),
+      numCell(monExp,null,numFmt),
+      numCell(monMil,null,numFmt),
+      // Net profit formula referencing other cells
+      numCell(monProfit,`C${r}-D${r}-E${r}`,numFmt),
+      // Running profit: first month = F2, others = G_prev + F_this
+      numCell(runningProfit,i===0?`F${r}`:`G${r-1}+F${r}`,numFmt)
+    ]);
+  });
+  const monTotalRow=13+1;
+  const totalInc=state.income.reduce((a,b)=>a+b.amount,0);
+  const totalExpC=state.expenses.reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0);
+  const totalMilC=calcMileage(state.mileage.reduce((a,b)=>a+b.miles,0));
+  monthData.push([bold('TOTAL'),null,
+    total(totalInc,`SUM(C2:C${monTotalRow-1})`),
+    total(totalExpC,`SUM(D2:D${monTotalRow-1})`),
+    total(totalMilC,`SUM(E2:E${monTotalRow-1})`),
+    highlight(totalInc-totalExpC-totalMilC,`C${monTotalRow}-D${monTotalRow}-E${monTotalRow}`)
+  ]);
+  const wsMonthly=sheetFromAoA(monthData);
+  wsMonthly['!cols']=[{wch:18},{wch:12},{wch:14},{wch:16},{wch:16},{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,wsMonthly,'Monthly Summary');
+
+  // ══════════════════════════════════════════════════════════════
+  // SHEET 6: TAX ESTIMATE
+  // ══════════════════════════════════════════════════════════════
+  const pension=state.allowances.filter(a=>a.category==='pension').reduce((a,b)=>a+b.amount,0);
+  const giftaidBonus=state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount*.25,0);
+  const capital=state.allowances.filter(a=>a.category==='capital').reduce((a,b)=>a+b.amount,0);
+  const losses=state.allowances.filter(a=>a.category==='loss').reduce((a,b)=>a+b.amount,0);
+  const ti=state.income.reduce((a,b)=>a+b.amount,0);
+  const te=state.expenses.reduce((a,b)=>a+(b.businessPct?b.amount*(b.businessPct/100):b.amount),0);
+  const tm=state.mileage.reduce((a,b)=>a+b.miles,0);
+  const mc=calcMileage(tm);
+  const extraDed=pension+giftaidBonus+capital+losses;
+  const sl=state.settings.studentLoan||'none';
+  const tax=calcTax(ti-te-mc,state.scotland,extraDed,sl);
+  const poa=Math.max(0,tax.total)/2;
+
+  // Each row: label | value | formula | notes
+  const taxSheetRows=[
+    [bold('TAX COMPANION — SELF ASSESSMENT ESTIMATE')],
+    [C(`Tax Year: ${state.taxYear}`)],[C(`Generated: ${new Date().toLocaleDateString('en-GB')}`)],[C(`Name: ${name}`)],[C(`UTR: ${utr}`)],[C(`Region: ${state.scotland?'Scotland':'England / Wales / NI'}`)],[],
+    [bold('INCOME',numFmt)],[],
+    [C('Self-employment income'),numCell(state.income.filter(i=>i.category==='self-employment').reduce((a,b)=>a+b.amount,0),null,numFmt),null,C("From 'Income' sheet, self-employment category")],
+    [C('Other income'),numCell(state.income.filter(i=>i.category!=='self-employment').reduce((a,b)=>a+b.amount,0),null,numFmt),null,C("From 'Income' sheet, all other categories")],
+    [bold('Total Income'),highlight(ti,null,numFmt),null,C("Total of all income entries for this tax year")],[],
+    [bold('DEDUCTIONS')],[],
+    [C('Business expenses'),numCell(te,null,numFmt),null,C("Claimable column total from Expenses sheet")],
+    [C('Mileage allowance (HMRC AMAP)'),numCell(mc,null,numFmt),null,C(`${tm.toLocaleString()} miles × HMRC rates from Mileage sheet`)],
+    [C('Pension contributions'),numCell(pension,null,numFmt),null,C("From Allowances sheet")],
+    [C('Gift Aid relief (grossed up)'),numCell(giftaidBonus+state.allowances.filter(a=>a.category==='giftaid').reduce((a,b)=>a+b.amount,0),null,numFmt),null,C("Donations + 25% basic rate top-up")],
+    [C('Capital allowances (AIA)'),numCell(capital,null,numFmt),null,C("From Allowances sheet")],
+    [C('Prior year losses'),numCell(losses,null,numFmt),null,C("From Allowances sheet")],
+    [C('Personal allowance'),numCell(12570,null,numFmt),null,C("2024/25 personal allowance — £12,570")],
+    [bold('Total Deductions'),highlight(te+mc+extraDed+12570,`B${12+2}+B${13+2}+B${14+2}+B${15+2}+B${16+2}+B${17+2}+B${18+2}+B${19+2}`,numFmt)],[],
+    [bold('TAX CALCULATION')],[],
+    [C('Taxable income'),numCell(Math.max(0,tax.taxableIncome),null,numFmt),null,C("Total Income less Total Deductions (minimum £0)")],
+    ...tax.bands.map(b=>[C(`Income tax @ ${(b.rate*100).toFixed(0)}%`),numCell(b.tax,null,numFmt),null,C(`${(b.rate*100).toFixed(0)}% × £${Math.round(b.amount).toLocaleString()} in this band`)]),
+    [C('Class 4 NI (6% / 2%)'),numCell(tax.ni4,null,numFmt),null,C('6% on profits £12,570–£50,270; 2% above £50,270')],
+    [C('Class 2 NI'),numCell(tax.ni2,null,numFmt),null,C('£3.45/week × 52 if profit > £12,570')],
+    ...(tax.student>0?[[C('Student loan repayment'),numCell(tax.student,null,numFmt),null,C(`Plan ${sl} threshold applied`)]]:[]),
+    [],
+    [bold('ESTIMATED TOTAL TAX DUE'),highlight(tax.total,null,numFmt)],[],
+    [bold('PAYMENTS ON ACCOUNT')],[],
+    [C('1st Payment on Account (31 Jan)'),numCell(poa,null,numFmt),null,C('50% of prior year tax bill')],
+    [C('2nd Payment on Account (31 Jul)'),numCell(poa,null,numFmt),null,C('50% of prior year tax bill')],
+    [C('Total advance payments'),numCell(poa*2,null,numFmt)],[],
+    [],
+    [C('⚠️ IMPORTANT: This is an ESTIMATE only. Always verify with a qualified accountant before submitting your Self Assessment return. Tax Companion is not affiliated with HMRC.')]
+  ];
+  const taxData=taxSheetRows.map(row=>row||[]);
+  const wsTax=sheetFromAoA(taxData);
+  wsTax['!cols']=[{wch:34},{wch:16},{wch:16},{wch:52}];
+  // Merge title cell
+  wsTax['!merges']=[{s:{r:0,c:0},e:{r:0,c:3}}];
+  XLSX.utils.book_append_sheet(wb,wsTax,'Tax Estimate');
+
+  // ══════════════════════════════════════════════════════════════
+  // WRITE FILE
+  // ══════════════════════════════════════════════════════════════
+  const filename=`TaxCompanion-${state.taxYear.replace('/','_')}.xlsx`;
+  XLSX.writeFile(wb,filename);
+  toast('Excel workbook exported 📊','success');
+}
+
+function exportCSV(){
+  const rows=[['Type','Date','Description','Category','Full Amount','Business %','Claimable','Reference','Recurring'],...state.income.map(i=>['Income',i.date,i.description,INCOME_CATS[i.category]||i.category,i.amount,'100%',i.amount,i.reference||'',i.recurring?'Yes':'']),...state.expenses.map(e=>['Expense',e.date,e.description,EXPENSE_CATS[e.category]||e.category,e.amount,`${e.businessPct||100}%`,e.businessPct?e.amount*(e.businessPct/100):e.amount,e.receipt||'',e.recurring?'Yes':'']),...state.mileage.map(m=>['Mileage',m.date,`${m.from} to ${m.to}`,m.purpose,m.miles,'100%',calcMileage(m.miles),`${m.miles} miles`,'']),...state.allowances.map(a=>['Allowance',a.date,a.description,ALLOWANCE_CATS[a.category]||a.category,a.amount,'100%',a.amount,'',''])];
+  dl(`taxcompanion-${state.taxYear.replace('/','_')}.csv`,rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv');toast('CSV exported 📥');
+}
+function exportJSON(){DB.set('tc_last_backup',Date.now());dl(`taxcompanion-backup-${state.taxYear.replace('/','_')}.json`,JSON.stringify({taxYear:state.taxYear,income:state.income,expenses:state.expenses,mileage:state.mileage,allowances:state.allowances},null,2),'application/json');toast('Backup saved 💾');checkBackupReminder()}
+function importJSON(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.income&&!d.expenses)throw new Error();if(d.taxYear)state.taxYear=d.taxYear;state.income=d.income||[];state.expenses=d.expenses||[];state.mileage=d.mileage||[];state.allowances=d.allowances||[];saveData();showView('dashboard');toast('Data restored ✓','success')}catch{toast('Import failed','error')}};r.readAsText(file)}
+function dl(filename,content,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();URL.revokeObjectURL(a.href)}
+function toast(msg,type=''){const t=document.createElement('div');t.className=`toast${type?' '+type:''}`;t.textContent=msg;document.getElementById('toastContainer').appendChild(t);setTimeout(()=>t.remove(),3200)}
+document.addEventListener('DOMContentLoaded',()=>{
+  loadState();buildYearPicker();
+  if(DB.get('tc_dark',false))document.body.classList.add('dark');
+  document.getElementById('darkModeBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';
+  if(!DB.get('tc_seen_onboarding',false))document.getElementById('onboarding').classList.remove('hidden');
+  document.getElementById('obStart')?.addEventListener('click',()=>{DB.set('tc_seen_onboarding',true);document.getElementById('onboarding').classList.add('hidden')});
+  document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>showView(t.dataset.view)));
+  document.getElementById('yearSwitcherBtn').addEventListener('click',()=>openSheet('yearSheetOverlay'));
+  document.getElementById('yearSheetOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('yearSheetOverlay'))closeSheet('yearSheetOverlay')});
+  document.getElementById('searchToggleBtn').addEventListener('click',toggleSearch);
+  document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
+  document.getElementById('darkModeBtn').addEventListener('click',toggleDarkMode);
+  document.getElementById('modalClose').addEventListener('click',closeModal);
+  document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal()});
+  document.getElementById('scotlandToggle')?.addEventListener('click',()=>{state.scotland=!state.scotland;state.settings.scotland=state.scotland;state.settings.region=state.scotland?'scotland':'england';DB.set('tc_settings',state.settings);document.getElementById('scotlandSw')?.classList.toggle('on',state.scotland);renderSummary();toast(state.scotland?'Scottish rates applied 🏴󠁧󠁢󠁳󠁣󠁴󠁿':'England/Wales/NI rates applied')});
+  document.getElementById('saveSettings').addEventListener('click',saveSettings);
+  document.getElementById('saveBudgets')?.addEventListener('click',saveBudgets);
+  document.getElementById('exportBtn').addEventListener('click',exportCSV);
+  document.getElementById('exportXLSXBtn')?.addEventListener('click',exportXLSX);
+  document.getElementById('exportJSONBtn').addEventListener('click',exportJSON);
+  document.getElementById('importJSONBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change',e=>{if(e.target.files[0])importJSON(e.target.files[0])});
+  document.getElementById('clearDataBtn').addEventListener('click',()=>{
+    openModal('Clear All Data',`
+      <div class="notice-card warning" style="margin-bottom:14px">
+        ⚠️ This will permanently delete all income, expenses, mileage and allowances for <strong>${state.taxYear}</strong>. This cannot be undone.
+      </div>
+      <div class="form-group">
+        <label>Type <strong>DELETE</strong> to confirm</label>
+        <input type="text" id="deleteConfirmInput" placeholder="Type DELETE here" autocomplete="off" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" style="background:var(--red);box-shadow:none" onclick="confirmClearData()">Clear All Data</button>
+      </div>
+    `);
+  });
+  showView('dashboard');
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+});
+function confirmClearData(){
+  const input=document.getElementById('deleteConfirmInput');
+  if(!input||input.value.trim().toUpperCase()!=='DELETE'){
+    input.style.borderColor='var(--red)';
+    input.focus();
+    toast('Type DELETE to confirm','error');
+    return;
+  }
+  state.income=[];state.expenses=[];state.mileage=[];state.allowances=[];
+  saveData();closeModal();showView('dashboard');
+  toast('All data cleared','success');
+}
+Object.assign(window,{exportXLSX,confirmClearData,dismissBanner,openAddIncome,openEditIncome,deleteIncome,saveIncome,dupIncome,openAddExpense,openEditExpense,deleteExpense,saveExpense,dupExpense,openAddMileage,openEditMileage,deleteMileage,saveMileage,dupMileage,openAddAllowance,openEditAllowance,deleteAllowance,saveAllowance,closeModal,setFilter,showView,selectYear,exportPL,exportJSON,openCSVImport,processCSVImport,openInvoiceBuilder,generateInvoice});
+</script>
+</body>
+</html>
