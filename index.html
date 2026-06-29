@@ -391,10 +391,10 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
       <div style="display:flex;gap:7px;margin-bottom:10px">
         <button class="secondary-btn" style="flex:1;text-align:center;padding:9px;font-size:.78rem" onclick="openCSVImport('expenses')">📥 Import CSV</button>
       </div>
-      <div class="filter-chips" id="expenseFilterChips"></div>
-      <div id="expenseList" class="entry-list"></div>
-      <div class="empty-card" id="expenseEmpty"><div class="empty-icon">🧾</div><p>No expenses recorded yet.</p><button class="empty-cta" onclick="openAddExpense()">Add first expense</button></div>
-      <div class="list-total" id="expenseTotalBar" style="display:none">Total: <strong id="expenseTotalDisplay">£0.00</strong></div>
+      <div class="filter-chips" id="expensesFilterChips"></div>
+      <div id="expensesList" class="entry-list"></div>
+      <div class="empty-card" id="expensesEmpty"><div class="empty-icon">🧾</div><p>No expenses recorded yet.</p><button class="empty-cta" onclick="openAddExpense()">Add first expense</button></div>
+      <div class="list-total" id="expensesTotalBar" style="display:none">Total: <strong id="expensesTotalDisplay">£0.00</strong></div>
     </section>
 
     <section class="view" id="view-mileage">
