@@ -467,6 +467,32 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
 #invoiceApp #app-header{ padding-left:16px; padding-right:16px; }
 #invoiceApp .month-tabs{ gap:6px; }
 #invoiceApp .month-tab{ padding:6px 10px; font-size:12px; }}
+
+/* ══ Invoice tab: mobile fit (must stay last) ══ */
+#invoiceApp{max-width:100%!important;min-width:0!important;width:auto!important;overflow-x:hidden;padding:10px 12px 24px}
+#invoiceApp main,#invoiceApp .container,#invoiceApp .wrap,#invoiceApp .page{max-width:100%!important;min-width:0!important;width:auto!important;margin:0!important;padding:0!important}
+#invoiceApp *{min-width:0}
+#invoiceApp .entry-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+#invoiceApp .segment-grid{grid-template-columns:1fr 1fr!important;gap:8px!important}
+#invoiceApp .item-grid{grid-template-columns:1fr 1fr!important;gap:8px!important}
+#invoiceApp .form-grid{grid-template-columns:1fr!important}
+#invoiceApp input,#invoiceApp select,#invoiceApp textarea{width:100%!important;max-width:100%!important;font-size:16px!important}
+#invoiceApp .entry-head{flex-wrap:wrap;gap:8px}
+#invoiceApp .entry-footer{flex-wrap:wrap}
+#invoiceApp .duration-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#invoiceApp nav{position:static!important;display:flex;flex-wrap:wrap;gap:4px;overflow-x:auto}
+#invoiceApp .tab-btn{padding:8px 10px!important;font-size:.8rem!important;flex-shrink:0}
+#invoiceApp .section-title{font-size:1.1rem!important}
+#invoiceApp h1{font-size:1.15rem!important}
+#invoiceApp .top-controls,#invoiceApp .controls{flex-wrap:wrap;gap:6px}
+
+/* collision neutralisers */
+#invoiceApp .entry-card{display:block!important;align-items:initial!important;gap:0!important;animation:none!important}
+/* shared: .active — invoice's own rules re-asserted by scope specificity */
+/* shared: .dark — invoice's own rules re-asserted by scope specificity */
+/* shared: .form-group — invoice's own rules re-asserted by scope specificity */
+/* shared: .section-header — invoice's own rules re-asserted by scope specificity */
+/* shared: .section-title — invoice's own rules re-asserted by scope specificity */
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
