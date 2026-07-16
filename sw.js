@@ -1,4 +1,4 @@
-const CACHE = 'taxcompanion-v11';
+const CACHE = 'taxcompanion-v12';
 const ASSETS = [
   './',
   './index.html',
