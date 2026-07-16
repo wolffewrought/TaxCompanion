@@ -494,24 +494,25 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
 /* shared: .section-header — invoice's own rules re-asserted by scope specificity */
 /* shared: .section-title — invoice's own rules re-asserted by scope specificity */
 
-/* ══ Invoice dark palette (follows app moon toggle) ══ */
-body.dark #invoiceApp{--inv-white:#1c2532;--inv-light:#0f1622;--inv-border:#2e3d55;--inv-slate:#8ea3c0;--inv-indigobg:#1e2a3d;--inv-greenbg:#152a22;background:#0f1622}
-body.dark #invoiceApp input,body.dark #invoiceApp select,body.dark #invoiceApp textarea{background:#141c29!important;color:#e6edf7!important;border-color:#2e3d55!important}
-body.dark #invoiceApp{color:#e6edf7}
-body.dark #invoiceApp .card.blue-card{background:#161e2b}
-body.dark #invoiceApp input[type=text],body.dark #invoiceApp input[type=email],body.dark #invoiceApp input[type=number],body.dark #invoiceApp input[type=date],body.dark #invoiceApp input[type=time],body.dark #invoiceApp textarea{background:#161e2b;color:#e6edf7}
-body.dark #invoiceApp .fmt-toggle.active{background:#1e2a3d}
-body.dark #invoiceApp input[type=color]{background:#161e2b}
-body.dark #invoiceApp .tip-box{background:#1e2a3d}
-body.dark #invoiceApp .month-tab{background:#1a2330}
-body.dark #invoiceApp .btn-secondary{background:#1c2532}
-body.dark #invoiceApp .btn-secondary:hover{background:#1e2a3d}
-body.dark #invoiceApp .segment-row{background:#1a2330}
-body.dark #invoiceApp .multiplier-select{background:#161e2b;color:#e6edf7}
-body.dark #invoiceApp .entry-mini-val{color:#e6edf7}
-body.dark #invoiceApp .dur-btn{background:#1a2330}
-body.dark #invoiceApp .dur-btn:hover{background:#1e2a3d}
-body.dark #invoiceApp .preset-item-name{color:#e6edf7}
+
+/* ══ Invoice themable colour routing ══ */
+#invoiceApp{background:var(--inv-bg);--inv-white:var(--inv-card);--inv-light:var(--inv-bg)}
+#invoiceApp input,#invoiceApp select,#invoiceApp textarea{background:var(--inv-soft)!important;color:var(--inv-text)!important;border-color:var(--inv-border)!important}
+#invoiceApp{color:var(--inv-text)}
+#invoiceApp .card.blue-card{background:var(--inv-soft)}
+#invoiceApp input[type=text],#invoiceApp input[type=email],#invoiceApp input[type=number],#invoiceApp input[type=date],#invoiceApp input[type=time],#invoiceApp textarea{background:var(--inv-soft);color:var(--inv-text)}
+#invoiceApp .fmt-toggle.active{background:var(--inv-soft)}
+#invoiceApp input[type=color]{background:var(--inv-soft)}
+#invoiceApp .tip-box{background:var(--inv-soft)}
+#invoiceApp .month-tab{background:var(--inv-soft)}
+#invoiceApp .btn-secondary{background:var(--inv-card)}
+#invoiceApp .btn-secondary:hover{background:var(--inv-soft)}
+#invoiceApp .segment-row{background:var(--inv-soft)}
+#invoiceApp .multiplier-select{background:var(--inv-soft);color:var(--inv-text)}
+#invoiceApp .entry-mini-val{color:var(--inv-text)}
+#invoiceApp .dur-btn{background:var(--inv-soft)}
+#invoiceApp .dur-btn:hover{background:var(--inv-soft)}
+#invoiceApp .preset-item-name{color:var(--inv-text)}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -1112,7 +1113,15 @@ body.dark #invoiceApp .preset-item-name{color:#e6edf7}
               <input type="color" id="settingAccent" value="#1a7f6e" style="width:44px;height:34px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)" />
             </div>
           </div>
-          <p class="settings-note">Quick toggle: the ☀️/🌙 button in the header. Invoice tab colours are set separately in Invoices → Settings.</p>
+          <div class="settings-field"><label>Advanced Colours</label>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <button type="button" class="chip" id="editLightBtn" onclick="setEditPalette('light')">Light palette</button>
+              <button type="button" class="chip" id="editDarkBtn" onclick="setEditPalette('dark')">Dark palette</button>
+            </div>
+            <div id="paletteEditor"></div>
+            <button type="button" class="secondary-btn" style="margin-top:8px;text-align:center" onclick="resetPalette()">↺ Reset all colours to defaults</button>
+          </div>
+          <p class="settings-note">Quick toggle: the ☀️/🌙 button in the header. Invoice accent colours (navy/red used on PDFs) are set separately in Invoices → Settings.</p>
         </div>
       </div>
       <div class="settings-group">
@@ -1482,12 +1491,33 @@ function doSearch(term){
   results.innerHTML=all.map(i=>`<div class="entry-card"><div class="entry-icon ${i._t==='inc'?'income':'expense'}">${CAT_ICONS[i.category]||'💰'}</div><div class="entry-info"><div class="entry-desc">${esc(i.description)}</div><div class="entry-meta">${fmtD(i.date)} · ${i._t==='inc'?INCOME_CATS[i.category]:EXPENSE_CATS[i.category]}</div></div><div class="entry-right"><div class="entry-amount ${i._t==='inc'?'income':'expense'}">${i._t==='inc'?'+':'-'}${fmt(i.amount)}</div></div></div>`).join('');
 }
 const ACCENTS=['#1a7f6e','#2563eb','#7c3aed','#e11d48','#b45309','#334155'];
+const PALETTE_DEFAULTS={
+ light:{bg:'#f5f2ed',card:'#ffffff',text:'#1c1917',invBg:'#f4f6fb',invCard:'#ffffff',invText:'#1a1a2e'},
+ dark:{bg:'#0f1a0e',card:'#162211',text:'#e2f0e4',invBg:'#0f1622',invCard:'#1c2532',invText:'#e6edf7'}};
+const PALETTE_LABELS={bg:'App background',card:'App cards',text:'App text',invBg:'Invoice background',invCard:'Invoice cards',invText:'Invoice text'};
+let editPalette=null;
 function hexMix(hex,tgt,f){const h=x=>parseInt(x,16),m=v=>Math.round(v).toString(16).padStart(2,'0');const r=h(hex.slice(1,3)),g=h(hex.slice(3,5)),b=h(hex.slice(5,7)),R=h(tgt.slice(1,3)),G=h(tgt.slice(3,5)),B=h(tgt.slice(5,7));return'#'+m(r+(R-r)*f)+m(g+(G-g)*f)+m(b+(B-b)*f)}
-function getTheme(){const t=DB.get('tc_theme',null);if(t&&t.mode)return t;const legacy=DB.get('tc_dark',null);return{mode:legacy===true?'dark':legacy===false?'light':'system',accent:'#1a7f6e'}}
-function applyTheme(){const t=getTheme();const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;const dark=t.mode==='dark'||(t.mode==='system'&&sysDark);document.body.classList.toggle('dark',dark);const btn=document.getElementById('darkModeBtn');if(btn)btn.textContent=dark?'\u2600\ufe0f':'\ud83c\udf19';const a=t.accent||'#1a7f6e',r=document.documentElement,h=x=>parseInt(x,16);r.style.setProperty('--teal',a);r.style.setProperty('--teal-mid',hexMix(a,'#ffffff',.18));r.style.setProperty('--teal-light',dark?hexMix(a,'#000000',.72):hexMix(a,'#ffffff',.88));r.style.setProperty('--teal-rgb',h(a.slice(1,3))+','+h(a.slice(3,5))+','+h(a.slice(5,7)))}
+function getTheme(){let t=DB.get('tc_theme',null);if(!t||!t.mode){const legacy=DB.get('tc_dark',null);t={mode:legacy===true?'dark':legacy===false?'light':'system',accent:'#1a7f6e'}}
+ t.light=Object.assign({},PALETTE_DEFAULTS.light,t.light||{});t.dark=Object.assign({},PALETTE_DEFAULTS.dark,t.dark||{});return t}
+function applyTheme(){const t=getTheme();const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;const dark=t.mode==='dark'||(t.mode==='system'&&sysDark);document.body.classList.toggle('dark',dark);
+ const btn=document.getElementById('darkModeBtn');if(btn)btn.textContent=dark?'\u2600\ufe0f':'\ud83c\udf19';
+ const P=t[dark?'dark':'light'],bs=document.body.style,h=x=>parseInt(x,16);
+ bs.setProperty('--bg',P.bg);bs.setProperty('--bg2',P.card);bs.setProperty('--surface2',hexMix(P.card,P.bg,.5));bs.setProperty('--border',hexMix(P.text,P.bg,.85));
+ bs.setProperty('--text',P.text);bs.setProperty('--text2',hexMix(P.text,P.bg,.35));bs.setProperty('--text3',hexMix(P.text,P.bg,.6));
+ const a=t.accent||'#1a7f6e';bs.setProperty('--teal',a);bs.setProperty('--teal-mid',hexMix(a,'#ffffff',.18));bs.setProperty('--teal-light',dark?hexMix(a,P.bg,.75):hexMix(a,'#ffffff',.88));bs.setProperty('--teal-rgb',h(a.slice(1,3))+','+h(a.slice(3,5))+','+h(a.slice(5,7)));
+ const inv=document.getElementById('invoiceApp');if(inv){const s=inv.style;s.setProperty('--inv-bg',P.invBg);s.setProperty('--inv-card',P.invCard);s.setProperty('--inv-soft',hexMix(P.invCard,P.invBg,.45));s.setProperty('--inv-text',P.invText);s.setProperty('--inv-border',hexMix(P.invText,P.invBg,.82));s.setProperty('--inv-slate',hexMix(P.invText,P.invBg,.45))}}
 function setThemeMode(m){const t=getTheme();t.mode=m;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
 function setAccent(a){const t=getTheme();t.accent=a;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
-function renderAccentSwatches(){const wrap=document.getElementById('accentSwatches');if(!wrap)return;const t=getTheme();wrap.querySelectorAll('.acc-sw').forEach(x=>x.remove());const picker=document.getElementById('settingAccent');ACCENTS.forEach(c=>{const b=document.createElement('button');b.className='acc-sw';b.style.cssText='width:32px;height:32px;border-radius:50%;border:2.5px solid '+(c===t.accent?'var(--text)':'transparent')+';background:'+c+';cursor:pointer;flex-shrink:0';b.onclick=()=>setAccent(c);wrap.insertBefore(b,picker)});if(picker)picker.value=t.accent;const sel=document.getElementById('settingThemeMode');if(sel)sel.value=t.mode}
+function setPaletteColour(mode,key,val){const t=getTheme();t[mode][key]=val;DB.set('tc_theme',t);applyTheme()}
+function setEditPalette(mode){editPalette=mode;renderPaletteEditor()}
+function resetPalette(){const t=getTheme();t.light=Object.assign({},PALETTE_DEFAULTS.light);t.dark=Object.assign({},PALETTE_DEFAULTS.dark);t.accent='#1a7f6e';DB.set('tc_theme',t);applyTheme();renderAccentSwatches();renderPaletteEditor();toast('Colours reset \u21ba')}
+function renderPaletteEditor(){const box=document.getElementById('paletteEditor');if(!box)return;const t=getTheme();
+ const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+ if(!editPalette)editPalette=(t.mode==='dark'||(t.mode==='system'&&sysDark))?'dark':'light';
+ const lb=document.getElementById('editLightBtn'),db=document.getElementById('editDarkBtn');
+ if(lb)lb.classList.toggle('active',editPalette==='light');if(db)db.classList.toggle('active',editPalette==='dark');
+ box.innerHTML=Object.keys(PALETTE_LABELS).map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;color:var(--text2)">${PALETTE_LABELS[k]}</span><input type="color" value="${t[editPalette][k]}" oninput="setPaletteColour('${editPalette}','${k}',this.value)" style="width:46px;height:32px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)"></div>`).join('');}
+function renderAccentSwatches(){const wrap=document.getElementById('accentSwatches');if(!wrap)return;const t=getTheme();wrap.querySelectorAll('.acc-sw').forEach(x=>x.remove());const picker=document.getElementById('settingAccent');ACCENTS.forEach(c=>{const b=document.createElement('button');b.className='acc-sw';b.style.cssText='width:32px;height:32px;border-radius:50%;border:2.5px solid '+(c===t.accent?'var(--text)':'transparent')+';background:'+c+';cursor:pointer;flex-shrink:0';b.onclick=()=>setAccent(c);wrap.insertBefore(b,picker)});if(picker)picker.value=t.accent;const sel=document.getElementById('settingThemeMode');if(sel)sel.value=t.mode;renderPaletteEditor()}
 function toggleDarkMode(){const t=getTheme();const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;const cur=t.mode==='dark'||(t.mode==='system'&&sysDark);setThemeMode(cur?'light':'dark')}
 function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalOverlay').classList.add('open');setTimeout(()=>document.querySelector('#modalBody input,#modalBody select')?.focus(),120)}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
@@ -1939,7 +1969,7 @@ function confirmClearData(){
   saveData();closeModal();showView('dashboard');
   toast('All data cleared','success');
 }
-Object.assign(window,{exportXLSX,confirmClearData,dismissBanner,openAddIncome,openEditIncome,deleteIncome,saveIncome,dupIncome,openAddExpense,openEditExpense,deleteExpense,saveExpense,dupExpense,openAddMileage,openEditMileage,deleteMileage,saveMileage,dupMileage,openAddAllowance,openEditAllowance,deleteAllowance,saveAllowance,closeModal,setFilter,showView,selectYear,exportPL,exportJSON,openCSVImport,processCSVImport,openInvoiceBuilder,generateInvoice});
+Object.assign(window,{exportXLSX,confirmClearData,dismissBanner,setEditPalette,setPaletteColour,resetPalette,setThemeMode,setAccent,openAddIncome,openEditIncome,deleteIncome,saveIncome,dupIncome,openAddExpense,openEditExpense,deleteExpense,saveExpense,dupExpense,openAddMileage,openEditMileage,deleteMileage,saveMileage,dupMileage,openAddAllowance,openEditAllowance,deleteAllowance,saveAllowance,closeModal,setFilter,showView,selectYear,exportPL,exportJSON,openCSVImport,processCSVImport,openInvoiceBuilder,generateInvoice});
 
 
 /* ═══════════ INVOICE ↔ TAX COMPANION BRIDGE ═══════════ */
