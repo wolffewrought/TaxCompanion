@@ -1171,7 +1171,7 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
         <div class="settings-group-title">About</div>
         <div class="settings-card about-card">
           <div class="about-logo">£</div>
-          <p><strong>Tax Companion</strong> <span id="buildBadge">build v16</span></p>
+          <p><strong>Tax Companion</strong> <span id="buildBadge">build v17</span></p>
           <p>Free, offline-first Self Assessment tracker for UK taxpayers.</p>
           <p class="disclaimer-note">Not affiliated with HMRC. Always verify with a qualified accountant before submitting your return.</p>
         </div>
@@ -1955,7 +1955,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     `);
   });
   showView('dashboard');
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{});let __rl=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(__rl)return;__rl=true;location.reload()});}
 });
 function confirmClearData(){
   const input=document.getElementById('deleteConfirmInput');
