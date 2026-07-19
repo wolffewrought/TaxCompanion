@@ -1098,7 +1098,7 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
     </section>
 
     <section class="view" id="view-settings">
-      <div class="view-toolbar"><h2 class="view-title">Settings</h2><span style="font-size:.68rem;color:var(--text3);font-weight:700" id="verTag">v19</span></div>
+      <div class="view-toolbar"><h2 class="view-title">Settings</h2><span style="font-size:.68rem;color:var(--text3);font-weight:700" id="verTag">v20</span></div>
       <div id="backupReminder" class="backup-reminder" style="display:none">
         💾 It's been 30+ days since your last backup. <button onclick="exportJSON()" style="background:none;border:none;color:#92400e;font-weight:700;cursor:pointer;text-decoration:underline">Backup now</button>
       </div>
@@ -1516,7 +1516,7 @@ function renderPaletteEditor(){const box=document.getElementById('paletteEditor'
  if(!editPalette)editPalette=(t.mode==='dark'||(t.mode==='system'&&sysDark))?'dark':'light';
  const lb=document.getElementById('editLightBtn'),db=document.getElementById('editDarkBtn');
  if(lb)lb.classList.toggle('active',editPalette==='light');if(db)db.classList.toggle('active',editPalette==='dark');
- box.innerHTML=Object.keys(PALETTE_LABELS).map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;color:var(--text2)">${PALETTE_LABELS[k]}</span><input type="color" value="${t[editPalette][k]}" oninput="setPaletteColour('${editPalette}','${k}',this.value)" style="width:46px;height:32px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)"></div>`).join('');}
+ box.innerHTML=Object.keys(PALETTE_LABELS).map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;color:var(--text2)">${PALETTE_LABELS[k]}</span><input type="color" value="${t[editPalette][k]}" oninput="setPaletteColour('${editPalette}','${k}',this.value)" onchange="setPaletteColour('${editPalette}','${k}',this.value)" style="width:46px;height:32px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)"></div>`).join('');}
 function renderAccentSwatches(){const wrap=document.getElementById('accentSwatches');if(!wrap)return;const t=getTheme();wrap.querySelectorAll('.acc-sw').forEach(x=>x.remove());const picker=document.getElementById('settingAccent');ACCENTS.forEach(c=>{const b=document.createElement('button');b.className='acc-sw';b.style.cssText='width:32px;height:32px;border-radius:50%;border:2.5px solid '+(c===t.accent?'var(--text)':'transparent')+';background:'+c+';cursor:pointer;flex-shrink:0';b.onclick=()=>setAccent(c);wrap.insertBefore(b,picker)});if(picker)picker.value=t.accent;const sel=document.getElementById('settingThemeMode');if(sel)sel.value=t.mode;renderPaletteEditor()}
 function toggleDarkMode(){const t=getTheme();const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;const cur=t.mode==='dark'||(t.mode==='system'&&sysDark);setThemeMode(cur?'light':'dark')}
 function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalOverlay').classList.add('open');setTimeout(()=>document.querySelector('#modalBody input,#modalBody select')?.focus(),120)}
@@ -1921,6 +1921,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   try{const mq=window.matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',()=>{if(getTheme().mode==='system')applyTheme()})}catch(e){}
   document.getElementById('settingThemeMode')?.addEventListener('change',e=>setThemeMode(e.target.value));
   document.getElementById('settingAccent')?.addEventListener('input',e=>setAccent(e.target.value));
+  document.getElementById('settingAccent')?.addEventListener('change',e=>setAccent(e.target.value));
   if(!DB.get('tc_seen_onboarding',false))document.getElementById('onboarding').classList.remove('hidden');
   document.getElementById('obStart')?.addEventListener('click',()=>{DB.set('tc_seen_onboarding',true);document.getElementById('onboarding').classList.add('hidden')});
   document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>showView(t.dataset.view)));
