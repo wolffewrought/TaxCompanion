@@ -1,6 +1,6 @@
 'use strict';
 /* Bump VER together with APP_VER in index.html on EVERY index change (rule §6.4) */
-const VER='v1.1-s1';
+const VER='v1.2-s1';
 const CACHE='tc-'+VER;
 const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 const SHEETJS='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';

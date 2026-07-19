@@ -502,7 +502,7 @@ nav{
 <script>
 'use strict';
 /* ============ VERSION (bump with sw.js cache name — rule §6.4) ============ */
-const APP_VER='v1.1-s1';
+const APP_VER='v1.2-s1';
 
 /* ============ CONSTANTS ============ */
 const VIEWS=['home','income','expenses','mileage','allowances','summary','invoices','settings'];
@@ -515,14 +515,7 @@ const THEME_DEFAULTS={
 /* ============ HELPERS ============ */
 const $=id=>document.getElementById(id);
 function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toast._h);toast._h=setTimeout(()=>t.classList.remove('show'),2200);}
-function deepMerge(base,over){
-  if(typeof over!=='object'||over===null)return base;
-  for(const k of Object.keys(base)){
-    if(typeof base[k]==='object'&&base[k]!==null){if(typeof over[k]==='object'&&over[k]!==null)deepMerge(base[k],over[k]);}
-    else if(over[k]!==undefined)base[k]=over[k];
-  }
-  return base;
-}
+function isHex(v){return typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);}
 function lsGet(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v);}catch(e){return fallback;}}
 function lsSet(key,val){
   try{localStorage.setItem(key,JSON.stringify(val));}
@@ -548,7 +541,24 @@ let selectedYear=lsGet('tc_year',yearLabel(currentTaxYearStart()));
 if(!/^\d{4}\/\d{4}$/.test(selectedYear))selectedYear=yearLabel(currentTaxYearStart());
 
 /* ============ THEME ENGINE (§1b) ============ */
-let theme=deepMerge(structuredClone(THEME_DEFAULTS),lsGet('tc_theme',{}));
+/* Theme lives on its own versioned key. The pre-rebuild app on this
+   origin used 'tc_theme' with a different schema — never read it, and
+   sanitize every field so only valid hex values can enter a palette. */
+const THEME_KEY='tc_theme2';
+function sanitizeTheme(t){
+  const d=structuredClone(THEME_DEFAULTS);
+  if(!t||typeof t!=='object')return d;
+  if(['light','dark','system'].includes(t.mode))d.mode=t.mode;
+  if(isHex(t.accent))d.accent=t.accent;
+  for(const m of ['light','dark']){
+    if(t[m]&&typeof t[m]==='object'){
+      for(const k of Object.keys(d[m]))if(isHex(t[m][k]))d[m][k]=t[m][k];
+    }
+  }
+  return d;
+}
+let theme=sanitizeTheme(lsGet(THEME_KEY,null));
+try{localStorage.removeItem('tc_theme');}catch(e){}
 const sysDark=window.matchMedia('(prefers-color-scheme: dark)');
 
 function resolvedMode(){return theme.mode==='system'?(sysDark.matches?'dark':'light'):theme.mode;}
@@ -597,7 +607,7 @@ function applyTheme(){
   const mt=$('modeToggle');if(mt)mt.textContent=mode==='dark'?'☀️':'🌙';
   syncThemeUI(mode);
 }
-function saveTheme(){lsSet('tc_theme',theme);}
+function saveTheme(){lsSet(THEME_KEY,theme);}
 
 /* keep settings controls in step with state */
 let palEditing=null; // 'light' | 'dark' | null
