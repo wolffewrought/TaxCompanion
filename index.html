@@ -1098,7 +1098,7 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
     </section>
 
     <section class="view" id="view-settings">
-      <div class="view-toolbar"><h2 class="view-title">Settings</h2></div>
+      <div class="view-toolbar"><h2 class="view-title">Settings</h2><span style="font-size:.68rem;color:var(--text3);font-weight:700" id="verTag">v19</span></div>
       <div id="backupReminder" class="backup-reminder" style="display:none">
         💾 It's been 30+ days since your last backup. <button onclick="exportJSON()" style="background:none;border:none;color:#92400e;font-weight:700;cursor:pointer;text-decoration:underline">Backup now</button>
       </div>
@@ -1509,7 +1509,7 @@ function applyTheme(){const t=getTheme();const sysDark=window.matchMedia&&window
 function setThemeMode(m){const t=getTheme();t.mode=m;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
 function setAccent(a){const t=getTheme();t.accent=a;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
 function setPaletteColour(mode,key,val){const t=getTheme();t[mode][key]=val;DB.set('tc_theme',t);applyTheme()}
-function setEditPalette(mode){editPalette=mode;renderPaletteEditor()}
+function setEditPalette(mode){editPalette=mode;const t=getTheme();if(t.mode!==mode){t.mode=mode;DB.set('tc_theme',t);applyTheme()}renderAccentSwatches()}
 function resetPalette(){const t=getTheme();t.light=Object.assign({},PALETTE_DEFAULTS.light);t.dark=Object.assign({},PALETTE_DEFAULTS.dark);t.accent='#1a7f6e';DB.set('tc_theme',t);applyTheme();renderAccentSwatches();renderPaletteEditor();toast('Colours reset \u21ba')}
 function renderPaletteEditor(){const box=document.getElementById('paletteEditor');if(!box)return;const t=getTheme();
  const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
