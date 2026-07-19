@@ -1490,7 +1490,7 @@ function doSearch(term){
   if(!all.length){results.innerHTML='<div style="color:var(--text3);padding:18px;text-align:center;font-size:.81rem">No results found</div>';return}
   results.innerHTML=all.map(i=>`<div class="entry-card"><div class="entry-icon ${i._t==='inc'?'income':'expense'}">${CAT_ICONS[i.category]||'💰'}</div><div class="entry-info"><div class="entry-desc">${esc(i.description)}</div><div class="entry-meta">${fmtD(i.date)} · ${i._t==='inc'?INCOME_CATS[i.category]:EXPENSE_CATS[i.category]}</div></div><div class="entry-right"><div class="entry-amount ${i._t==='inc'?'income':'expense'}">${i._t==='inc'?'+':'-'}${fmt(i.amount)}</div></div></div>`).join('');
 }
-const APP_VER='v23';
+const APP_VER='v24';
 const ACCENTS=['#1a7f6e','#2563eb','#7c3aed','#e11d48','#b45309','#334155'];
 const PALETTE_DEFAULTS={
  light:{bg:'#f5f2ed',card:'#ffffff',text:'#1c1917',invBg:'#f4f6fb',invCard:'#ffffff',invText:'#1a1a2e'},
@@ -1521,7 +1521,7 @@ function renderPaletteEditor(){const box=document.getElementById('paletteEditor'
  if(!editPalette)editPalette=(t.mode==='dark'||(t.mode==='system'&&sysDark))?'dark':'light';
  const lb=document.getElementById('editLightBtn'),db=document.getElementById('editDarkBtn');
  if(lb)lb.classList.toggle('active',editPalette==='light');if(db)db.classList.toggle('active',editPalette==='dark');
- box.innerHTML=Object.keys(PALETTE_LABELS).map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;color:var(--text2)">${PALETTE_LABELS[k]}</span><input type="color" data-k="${k}" value="${t[editPalette][k]}" oninput="setPaletteColour('${editPalette}','${k}',this.value)" onchange="setPaletteColour('${editPalette}','${k}',this.value)" style="width:46px;height:32px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)"></div>`).join('');box.querySelectorAll('input[type=color]').forEach(inp=>{const f=()=>setPaletteColour(editPalette,inp.dataset.k||inp.getAttribute('data-k'),inp.value);inp.addEventListener('input',f);inp.addEventListener('change',f)});}
+ box.innerHTML=Object.keys(PALETTE_LABELS).map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;color:var(--text2)">${PALETTE_LABELS[k]}</span><input type="color" data-k="${k}" value="${t[editPalette][k]}" oninput="setPaletteColour('${editPalette}','${k}',this.value)" onchange="setPaletteColour('${editPalette}','${k}',this.value)" style="width:46px;height:32px;padding:2px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2)"></div>`).join('');box.querySelectorAll('input[type=color]').forEach(inp=>{const f=()=>setPaletteColour(editPalette,inp.dataset.k,inp.value);inp.addEventListener('input',f);inp.addEventListener('change',f);let pv=inp.value;setInterval(()=>{if(inp.value!==pv){pv=inp.value;f()}},300)});}
 function renderAccentSwatches(){const wrap=document.getElementById('accentSwatches');if(!wrap)return;const t=getTheme();wrap.querySelectorAll('.acc-sw').forEach(x=>x.remove());const picker=document.getElementById('settingAccent');ACCENTS.forEach(c=>{const b=document.createElement('button');b.className='acc-sw';b.style.cssText='width:32px;height:32px;border-radius:50%;border:2.5px solid '+(c===t.accent?'var(--text)':'transparent')+';background:'+c+';cursor:pointer;flex-shrink:0';b.onclick=()=>setAccent(c);wrap.insertBefore(b,picker)});if(picker)picker.value=t.accent;const sel=document.getElementById('settingThemeMode');if(sel)sel.value=t.mode;renderPaletteEditor()}
 function toggleDarkMode(){const t=getTheme();const sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;const cur=t.mode==='dark'||(t.mode==='system'&&sysDark);setThemeMode(cur?'light':'dark')}
 function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalOverlay').classList.add('open');setTimeout(()=>document.querySelector('#modalBody input,#modalBody select')?.focus(),120)}
@@ -1927,6 +1927,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('settingThemeMode')?.addEventListener('change',e=>setThemeMode(e.target.value));
   document.getElementById('settingAccent')?.addEventListener('input',e=>setAccent(e.target.value));
   document.getElementById('settingAccent')?.addEventListener('change',e=>setAccent(e.target.value));
+  (function(){const a=document.getElementById('settingAccent');if(!a)return;let pv=a.value;setInterval(()=>{if(a.value!==pv){pv=a.value;setAccent(a.value)}},300)})();
   if(!DB.get('tc_seen_onboarding',false))document.getElementById('onboarding').classList.remove('hidden');
   document.getElementById('obStart')?.addEventListener('click',()=>{DB.set('tc_seen_onboarding',true);document.getElementById('onboarding').classList.add('hidden')});
   document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>showView(t.dataset.view)));
