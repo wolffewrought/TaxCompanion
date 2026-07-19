@@ -1,71 +1,64 @@
-const CACHE = 'taxcompanion-v24';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-];
-const CDN_ASSETS = [
-  'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js',
-];
+'use strict';
+/* Bump VER together with APP_VER in index.html on EVERY index change (rule §6.4) */
+const VER='v1.1-s1';
+const CACHE='tc-'+VER;
+const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
+const SHEETJS='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c => Promise.all(ASSETS.map(u => fetch(u, {cache:'reload'}).then(r => { if(r.ok) return c.put(u, r); }).catch(()=>{}))))
-      .then(() => {
-        // Cache CDN assets separately — don't block install if CDN is offline
-        caches.open(CACHE).then(c => {
-          CDN_ASSETS.forEach(url => fetch(url).then(r => { if(r.ok) c.put(url, r) }).catch(()=>{}));
-        });
-      })
-      .then(() => self.skipWaiting())
-  );
+self.addEventListener('install',e=>{
+  e.waitUntil((async()=>{
+    const c=await caches.open(CACHE);
+    /* cache:'reload' defeats GitHub Pages' 10-min HTTP cache */
+    await Promise.all(CORE.map(async u=>{
+      try{const r=await fetch(u,{cache:'reload'});if(r.ok)await c.put(u,r);}catch(err){}
+    }));
+    /* SheetJS pre-cache is non-blocking */
+    fetch(SHEETJS).then(r=>{if(r.ok)c.put(SHEETJS,r);}).catch(()=>{});
+    self.skipWaiting();
+  })());
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener('activate',e=>{
+  e.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+self.addEventListener('fetch',e=>{
+  const req=e.request;
+  if(req.method!=='GET')return;
+  const url=new URL(req.url);
 
-  // App shell & navigations — NETWORK FIRST so updates land immediately; cache = offline fallback
-  if (url.origin === location.origin) {
-    e.respondWith(
-      fetch(e.request, {cache:'no-cache'})
-        .then(r => { const cl = r.clone(); caches.open(CACHE).then(c => c.put(e.request, cl)); return r; })
-        .catch(() => caches.match(e.request).then(x => x || caches.match('./index.html')))
-    );
+  /* SheetJS CDN: cache-first so exports work offline after first load */
+  if(req.url===SHEETJS){
+    e.respondWith((async()=>{
+      const hit=await caches.match(SHEETJS);
+      if(hit)return hit;
+      const r=await fetch(req);
+      if(r.ok)(await caches.open(CACHE)).put(SHEETJS,r.clone());
+      return r;
+    })());
     return;
   }
 
-  const url = new URL(e.request.url);
-
-  // Fonts — network first, cache fallback
-  if (url.hostname.includes('fonts.g')) {
-    e.respondWith(
-      fetch(e.request)
-        .then(r => { caches.open(CACHE).then(c => c.put(e.request, r.clone())); return r; })
-        .catch(() => caches.match(e.request))
-    );
-    return;
-  }
-
-  // Local assets — cache first, network fallback
-  if (url.origin === location.origin) {
-    e.respondWith(
-      caches.match(e.request).then(cached => cached ||
-        fetch(e.request).then(r => {
-          if (r.ok) caches.open(CACHE).then(c => c.put(e.request, r.clone()));
-          return r;
-        }).catch(() => caches.match('./index.html'))
-      )
-    );
+  /* Same-origin: NETWORK-FIRST — cache is the offline fallback only (rule §6.2) */
+  if(url.origin===location.origin){
+    e.respondWith((async()=>{
+      try{
+        const r=await fetch(req);
+        if(r.ok)(await caches.open(CACHE)).put(req,r.clone());
+        return r;
+      }catch(err){
+        const hit=await caches.match(req);
+        if(hit)return hit;
+        if(req.mode==='navigate'){
+          const idx=await caches.match('./index.html');
+          if(idx)return idx;
+        }
+        return new Response('Offline',{status:503});
+      }
+    })());
   }
 });
