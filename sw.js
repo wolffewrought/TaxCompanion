@@ -13,7 +13,7 @@ const CDN_ASSETS = [
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => c.addAll(ASSETS))
+      .then(c => Promise.all(ASSETS.map(u => fetch(u, {cache:'reload'}).then(r => { if(r.ok) return c.put(u, r); }).catch(()=>{}))))
       .then(() => {
         // Cache CDN assets separately — don't block install if CDN is offline
         caches.open(CACHE).then(c => {
@@ -33,6 +33,18 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // App shell & navigations — NETWORK FIRST so updates land immediately; cache = offline fallback
+  if (url.origin === location.origin) {
+    e.respondWith(
+      fetch(e.request, {cache:'no-cache'})
+        .then(r => { const cl = r.clone(); caches.open(CACHE).then(c => c.put(e.request, cl)); return r; })
+        .catch(() => caches.match(e.request).then(x => x || caches.match('./index.html')))
+    );
+    return;
+  }
+
   const url = new URL(e.request.url);
 
   // Fonts — network first, cache fallback
