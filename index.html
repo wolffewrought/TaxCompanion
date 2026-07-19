@@ -1098,7 +1098,7 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
     </section>
 
     <section class="view" id="view-settings">
-      <div class="view-toolbar"><h2 class="view-title">Settings</h2><span style="font-size:.68rem;color:var(--text3);font-weight:700" id="verTag">v21</span></div>
+      <div class="view-toolbar"><h2 class="view-title">Settings</h2><span style="font-size:.68rem;color:var(--text3);font-weight:700" id="verTag"></span></div>
       <div id="backupReminder" class="backup-reminder" style="display:none">
         💾 It's been 30+ days since your last backup. <button onclick="exportJSON()" style="background:none;border:none;color:#92400e;font-weight:700;cursor:pointer;text-decoration:underline">Backup now</button>
       </div>
@@ -1171,7 +1171,7 @@ body.dark{--bg:#0f1a0e;--bg2:#162211;--surface2:#1e3019;--border:#2a4a2e;--text:
         <div class="settings-group-title">About</div>
         <div class="settings-card about-card">
           <div class="about-logo">£</div>
-          <p><strong>Tax Companion</strong> <span id="buildBadge">build v17</span></p>
+          <p><strong>Tax Companion</strong> <span id="buildBadge"></span></p>
           <p>Free, offline-first Self Assessment tracker for UK taxpayers.</p>
           <p class="disclaimer-note">Not affiliated with HMRC. Always verify with a qualified accountant before submitting your return.</p>
         </div>
@@ -1490,6 +1490,7 @@ function doSearch(term){
   if(!all.length){results.innerHTML='<div style="color:var(--text3);padding:18px;text-align:center;font-size:.81rem">No results found</div>';return}
   results.innerHTML=all.map(i=>`<div class="entry-card"><div class="entry-icon ${i._t==='inc'?'income':'expense'}">${CAT_ICONS[i.category]||'💰'}</div><div class="entry-info"><div class="entry-desc">${esc(i.description)}</div><div class="entry-meta">${fmtD(i.date)} · ${i._t==='inc'?INCOME_CATS[i.category]:EXPENSE_CATS[i.category]}</div></div><div class="entry-right"><div class="entry-amount ${i._t==='inc'?'income':'expense'}">${i._t==='inc'?'+':'-'}${fmt(i.amount)}</div></div></div>`).join('');
 }
+const APP_VER='v22';
 const ACCENTS=['#1a7f6e','#2563eb','#7c3aed','#e11d48','#b45309','#334155'];
 const PALETTE_DEFAULTS={
  light:{bg:'#f5f2ed',card:'#ffffff',text:'#1c1917',invBg:'#f4f6fb',invCard:'#ffffff',invText:'#1a1a2e'},
@@ -1506,7 +1507,8 @@ function applyTheme(){const t=getTheme();const sysDark=window.matchMedia&&window
  bs.setProperty('--text',P.text);bs.setProperty('--text2',hexMix(P.text,P.bg,.35));bs.setProperty('--text3',hexMix(P.text,P.bg,.6));
  const a=t.accent||'#1a7f6e';bs.setProperty('--teal',a);bs.setProperty('--teal-mid',hexMix(a,'#ffffff',.18));bs.setProperty('--teal-light',dark?hexMix(a,P.bg,.75):hexMix(a,'#ffffff',.88));bs.setProperty('--teal-rgb',h(a.slice(1,3))+','+h(a.slice(3,5))+','+h(a.slice(5,7)));const lum=c=>{const q=x=>{x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)};return .2126*q(h(c.slice(1,3)))+.7152*q(h(c.slice(3,5)))+.0722*q(h(c.slice(5,7)))};const la=lum(a);bs.setProperty('--teal-ink',la>.5?'#111114':'#ffffff');let tt=a;if(dark&&la<.22)tt=hexMix(a,'#ffffff',.55);else if(!dark&&la>.62)tt=hexMix(a,'#000000',.55);bs.setProperty('--teal-text',tt);
  const inv=document.getElementById('invoiceApp');if(inv){const s=inv.style;s.setProperty('--inv-bg',P.invBg);s.setProperty('--inv-card',P.invCard);s.setProperty('--inv-soft',hexMix(P.invCard,P.invBg,.45));s.setProperty('--inv-text',P.invText);s.setProperty('--inv-border',hexMix(P.invText,P.invBg,.82));s.setProperty('--inv-slate',hexMix(P.invText,P.invBg,.45))}}
-function setThemeMode(m){const t=getTheme();t.mode=m;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
+function setThemeMode(m){const t=getTheme();t.mode=m;DB.set('tc_theme',t);applyTheme();
+  document.querySelectorAll('#verTag,#buildBadge').forEach(el=>el.textContent='build '+APP_VER);renderAccentSwatches()}
 function setAccent(a){const t=getTheme();t.accent=a;DB.set('tc_theme',t);applyTheme();renderAccentSwatches()}
 function setPaletteColour(mode,key,val){const t=getTheme();t[mode][key]=val;DB.set('tc_theme',t);applyTheme()}
 function setEditPalette(mode){editPalette=mode;const t=getTheme();if(t.mode!==mode){t.mode=mode;DB.set('tc_theme',t);applyTheme()}renderAccentSwatches()}
