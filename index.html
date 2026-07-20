@@ -58,8 +58,8 @@ header{
 .logo{
   width:46px;height:46px;border-radius:14px;background:var(--teal);color:var(--accent-ink);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;
-  font-family:'Lora',serif;font-style:italic;box-shadow:0 4px 12px rgba(var(--accent-rgb),.35);
-  flex-shrink:0;
+  font-family:'Lora',serif;font-style:italic;flex-shrink:0;border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 4px 12px rgba(var(--accent-rgb),.35),0 1px 4px rgba(0,0,0,.18);
 }
 .head-title{flex:1;min-width:0;line-height:1.2}
 .head-title b{font-size:19px;font-weight:800;display:block}
@@ -94,10 +94,11 @@ main{flex:1;padding:20px 16px calc(100px + env(safe-area-inset-bottom))}
 .muted{color:var(--text2);font-size:13px}
 .tiny{color:var(--text3);font-size:12px}
 .btn{
-  border:none;border-radius:13px;padding:12px 18px;font-family:inherit;font-weight:700;
+  border:1px solid rgba(0,0,0,.10);border-radius:13px;padding:12px 18px;font-family:inherit;font-weight:700;
   font-size:14px;cursor:pointer;background:var(--teal);color:var(--accent-ink);
   transition:transform .2s var(--ease);
 }
+body.dark .btn{border-color:rgba(255,255,255,.14)}
 .btn:active{transform:scale(.95)}
 .btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
 .btn.small{padding:9px 13px;font-size:13px;border-radius:11px}
@@ -218,6 +219,9 @@ nav{
 .swatch.sel{border-color:var(--text);box-shadow:0 0 0 2px var(--bg2) inset}
 .cust-wrap{position:relative;width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px dashed var(--text3);display:flex;align-items:center;justify-content:center;font-size:15px}
 .cust-wrap input{position:absolute;inset:-8px;width:60px;height:60px;opacity:0;cursor:pointer}
+.cust-wrap.sel{border:2.5px solid var(--text);border-radius:50%}
+.cust-wrap.sel .cust-em{display:none}
+.cust-wrap.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--accent-ink);font-weight:800;font-size:16px;pointer-events:none}
 .color-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
 .color-row:last-child{border-bottom:none}
 .color-row label{font-size:13px;font-weight:700}
@@ -411,7 +415,7 @@ nav{
         <button class="swatch" data-c="#e11d48" style="background:#e11d48"></button>
         <button class="swatch" data-c="#b45309" style="background:#b45309"></button>
         <button class="swatch" data-c="#334155" style="background:#334155"></button>
-        <div class="cust-wrap">🎨<input type="color" id="accentCustom" value="#1a7f6e"></div>
+        <div class="cust-wrap" id="custWrap"><span class="cust-em">🎨</span><input type="color" id="accentCustom" value="#1a7f6e"></div>
       </div>
     </div>
     <div class="field"><label>Advanced colours</label>
@@ -502,7 +506,7 @@ nav{
 <script>
 'use strict';
 /* ============ VERSION (bump with sw.js cache name — rule §6.4) ============ */
-const APP_VER='v1.2-s1';
+const APP_VER='v1.3-s1';
 
 /* ============ CONSTANTS ============ */
 const VIEWS=['home','income','expenses','mileage','allowances','summary','invoices','settings'];
@@ -615,6 +619,13 @@ function syncThemeUI(mode){
   document.querySelectorAll('#modeSeg button').forEach(btn=>btn.classList.toggle('on',btn.dataset.mode===theme.mode));
   document.querySelectorAll('#accentSwatches .swatch').forEach(sw=>sw.classList.toggle('sel',sw.dataset.c.toLowerCase()===theme.accent.toLowerCase()));
   const ac=$('accentCustom');if(ac&&ac.value.toLowerCase()!==theme.accent.toLowerCase())ac.value=theme.accent;
+  const cw=$('custWrap');
+  if(cw){
+    let preset=false;
+    document.querySelectorAll('#accentSwatches .swatch').forEach(sw=>{if(sw.dataset.c.toLowerCase()===theme.accent.toLowerCase())preset=true;});
+    cw.classList.toggle('sel',!preset);
+    cw.style.background=preset?'':theme.accent;
+  }
   if(palEditing){
     const pal=theme[palEditing];
     const map={pal_bg:'bg',pal_card:'card',pal_text:'text',pal_invBg:'invBg',pal_invCard:'invCard',pal_invText:'invText'};
@@ -623,11 +634,14 @@ function syncThemeUI(mode){
   }
 }
 
-/* colour input binding — input + change + 300ms watcher (rule §6.5) */
+/* colour input binding — input + change + blur + 300ms watcher (rule §6.5).
+   Samsung Internet sometimes only commits .value late; the blur listener
+   and watcher both catch that case. */
 function bindColour(el,fn){
   if(!el)return;
   el.addEventListener('input',()=>fn(el.value));
   el.addEventListener('change',()=>fn(el.value));
+  el.addEventListener('blur',()=>fn(el.value));
   let last=el.value;
   setInterval(()=>{if(el.value!==last){last=el.value;fn(el.value);}},300);
 }
